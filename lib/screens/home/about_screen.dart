@@ -409,7 +409,7 @@ class AboutScreen extends StatelessWidget {
                           divider: divider,
                           accent: accent,
                           onTap: () =>
-                              _launchUrl("mailto:shaaz.builds@gmail.com"),
+                              _launchUrl("mailto:shez.in.studio@gmail.com"),
                           isLast: true,
                         ),
                       ],

@@ -32,17 +32,41 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     super.dispose();
   }
 
+  // updated
+
   Future<void> _openDirections() async {
     final lat = widget.place.lat;
     final lng = widget.place.lng;
     final name = Uri.encodeComponent(widget.place.name);
-    final url = Uri.parse(
-      "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination_place_id=$name",
+
+    // Try Google Maps app first, fall back to browser
+    final googleMapsApp = Uri.parse("google.navigation:q=$lat,$lng&mode=d");
+    final googleMapsBrowser = Uri.parse(
+      "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination=$name&travelmode=driving",
     );
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
+
+    if (await canLaunchUrl(googleMapsApp)) {
+      await launchUrl(googleMapsApp, mode: LaunchMode.externalApplication);
+    } else if (await canLaunchUrl(googleMapsBrowser)) {
+      await launchUrl(googleMapsBrowser, mode: LaunchMode.externalApplication);
+    } else {
+      // Final fallback — open in any available browser
+      await launchUrl(googleMapsBrowser, mode: LaunchMode.platformDefault);
     }
   }
+
+  // Future<void> _openDirections() async {
+  //   print("Opening directions for ${widget.place.name}");
+  //   final lat = widget.place.lat;
+  //   final lng = widget.place.lng;
+  //   final name = Uri.encodeComponent(widget.place.name);
+  //   final url = Uri.parse(
+  //     "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination_place_id=$name",
+  //   );
+  //   if (await canLaunchUrl(url)) {
+  //     await launchUrl(url, mode: LaunchMode.externalApplication);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

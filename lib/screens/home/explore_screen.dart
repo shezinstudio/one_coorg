@@ -5,6 +5,15 @@ import 'package:one_coorg/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 // ── Categories ────────────────────────────────────────────
+// const List<Map<String, dynamic>> _categories = [
+//   {"label": "All", "icon": Icons.grid_view_rounded},
+//   {"label": "Waterfalls", "icon": Icons.water_rounded},
+//   {"label": "Wildlife", "icon": Icons.pets_rounded},
+//   {"label": "Temples", "icon": Icons.temple_hindu_rounded},
+//   {"label": "Viewpoints", "icon": Icons.panorama_rounded},
+//   {"label": "Trekking", "icon": Icons.hiking_rounded},
+// ];
+
 const List<Map<String, dynamic>> _categories = [
   {"label": "All", "icon": Icons.grid_view_rounded},
   {"label": "Waterfalls", "icon": Icons.water_rounded},
@@ -12,6 +21,11 @@ const List<Map<String, dynamic>> _categories = [
   {"label": "Temples", "icon": Icons.temple_hindu_rounded},
   {"label": "Viewpoints", "icon": Icons.panorama_rounded},
   {"label": "Trekking", "icon": Icons.hiking_rounded},
+  {"label": "Plantations", "icon": Icons.forest_rounded},
+  {"label": "Adventure", "icon": Icons.paragliding_rounded},
+  {"label": "Lakes", "icon": Icons.water_damage_rounded},
+  {"label": "Towns", "icon": Icons.location_city_rounded},
+  {"label": "Culture", "icon": Icons.museum_rounded},
 ];
 
 const Map<String, Color> _categoryAccents = {
