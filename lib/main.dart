@@ -9,7 +9,9 @@ void main() async {
 
   await Supabase.initialize(
     url: 'https://wacayfyuuugawcwzsqcn.supabase.co',
-    publishableKey: 'sb_publishable_WDyUGVPutJMulZevxZ-T2A_PCbF9ulZ',
+    // publishableKey: 'sb_publishable_WDyUGVPutJMulZevxZ-T2A_PCbF9ulZ',
+    publishableKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndhY2F5Znl1dXVnYXdjd3pzcWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjg5MDMsImV4cCI6MjA5Njg0NDkwM30.kgoi97hUSazLORehFjDFafRbjCLnRt5Blro2WF84sHo',
   );
 
   runApp(const CoorgExplorerApp());
