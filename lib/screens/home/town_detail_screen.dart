@@ -2,6 +2,7 @@ import 'package:one_coorg/theme/app_colors.dart';
 import 'package:one_coorg/screens/home/towns_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TownDetailScreen extends StatefulWidget {
@@ -186,61 +187,61 @@ class _TownDetailScreenState extends State<TownDetailScreen> {
                   ),
                 ),
 
-                // ── Quick stats ──────────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      decoration: BoxDecoration(
-                        color: cardBg,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: divider),
-                        boxShadow: isDark
-                            ? []
-                            : [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.07,
-                                  ),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                      ),
-                      child: Row(
-                        children: [
-                          _StatItem(
-                            icon: Icons.wb_sunny_rounded,
-                            iconColor: const Color(0xFFFFC107),
-                            value: widget.town.weather,
-                            label: "WEATHER",
-                            textPri: textPri,
-                            textSec: textSec,
-                          ),
-                          _VertDivider(color: divider),
-                          _StatItem(
-                            icon: Icons.calendar_month_rounded,
-                            iconColor: AppColors.primaryLight,
-                            value: widget.town.bestTime,
-                            label: "BEST TIME",
-                            textPri: textPri,
-                            textSec: textSec,
-                          ),
-                          _VertDivider(color: divider),
-                          _StatItem(
-                            icon: Icons.people_rounded,
-                            iconColor: const Color(0xFF1565C0),
-                            value: widget.town.population,
-                            label: "POPULATION",
-                            textPri: textPri,
-                            textSec: textSec,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                // // ── Quick stats ──────────────────────────────
+                // SliverToBoxAdapter(
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                //     child: Container(
+                //       padding: const EdgeInsets.symmetric(vertical: 16),
+                //       decoration: BoxDecoration(
+                //         color: cardBg,
+                //         borderRadius: BorderRadius.circular(18),
+                //         border: Border.all(color: divider),
+                //         boxShadow: isDark
+                //             ? []
+                //             : [
+                //                 BoxShadow(
+                //                   color: AppColors.primary.withValues(
+                //                     alpha: 0.07,
+                //                   ),
+                //                   blurRadius: 14,
+                //                   offset: const Offset(0, 4),
+                //                 ),
+                //               ],
+                //       ),
+                //       child: Row(
+                //         children: [
+                //           _StatItem(
+                //             icon: Icons.wb_sunny_rounded,
+                //             iconColor: const Color(0xFFFFC107),
+                //             value: widget.town.weather,
+                //             label: "WEATHER",
+                //             textPri: textPri,
+                //             textSec: textSec,
+                //           ),
+                //           _VertDivider(color: divider),
+                //           _StatItem(
+                //             icon: Icons.calendar_month_rounded,
+                //             iconColor: AppColors.primaryLight,
+                //             value: widget.town.bestTime,
+                //             label: "BEST TIME",
+                //             textPri: textPri,
+                //             textSec: textSec,
+                //           ),
+                //           _VertDivider(color: divider),
+                //           _StatItem(
+                //             icon: Icons.people_rounded,
+                //             iconColor: const Color(0xFF1565C0),
+                //             value: widget.town.population,
+                //             label: "POPULATION",
+                //             textPri: textPri,
+                //             textSec: textSec,
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
 
                 // ── About ────────────────────────────────────
                 SliverToBoxAdapter(
@@ -268,85 +269,85 @@ class _TownDetailScreenState extends State<TownDetailScreen> {
                   ),
                 ),
 
-                // ── Highlights ───────────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _SectionTitle(title: "Highlights", textPri: textPri),
-                        const SizedBox(height: 14),
-                        GridView.count(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          childAspectRatio: 2.4,
-                          children: widget.town.highlights
-                              .map(
-                                (h) => Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: cardBg,
-                                    borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(color: divider),
-                                    boxShadow: isDark
-                                        ? []
-                                        : [
-                                            BoxShadow(
-                                              color: AppColors.primary
-                                                  .withValues(alpha: 0.05),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 2),
-                                            ),
-                                          ],
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(7),
-                                        decoration: BoxDecoration(
-                                          color: accent.withValues(
-                                            alpha: isDark ? 0.2 : 0.10,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          h["icon"] as IconData,
-                                          size: 16,
-                                          color: accent,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text(
-                                          h["label"] as String,
-                                          maxLines: 2,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: textPri,
-                                            height: 1.3,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                // // ── Highlights ───────────────────────────────
+                // SliverToBoxAdapter(
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         _SectionTitle(title: "Highlights", textPri: textPri),
+                //         const SizedBox(height: 14),
+                //         GridView.count(
+                //           crossAxisCount: 2,
+                //           crossAxisSpacing: 12,
+                //           mainAxisSpacing: 12,
+                //           shrinkWrap: true,
+                //           physics: const NeverScrollableScrollPhysics(),
+                //           childAspectRatio: 2.4,
+                //           children: widget.town.highlights
+                //               .map(
+                //                 (h) => Container(
+                //                   padding: const EdgeInsets.symmetric(
+                //                     horizontal: 12,
+                //                     vertical: 10,
+                //                   ),
+                //                   decoration: BoxDecoration(
+                //                     color: cardBg,
+                //                     borderRadius: BorderRadius.circular(14),
+                //                     border: Border.all(color: divider),
+                //                     boxShadow: isDark
+                //                         ? []
+                //                         : [
+                //                             BoxShadow(
+                //                               color: AppColors.primary
+                //                                   .withValues(alpha: 0.05),
+                //                               blurRadius: 8,
+                //                               offset: const Offset(0, 2),
+                //                             ),
+                //                           ],
+                //                   ),
+                //                   child: Row(
+                //                     children: [
+                //                       Container(
+                //                         padding: const EdgeInsets.all(7),
+                //                         decoration: BoxDecoration(
+                //                           color: accent.withValues(
+                //                             alpha: isDark ? 0.2 : 0.10,
+                //                           ),
+                //                           borderRadius: BorderRadius.circular(
+                //                             8,
+                //                           ),
+                //                         ),
+                //                         child: Icon(
+                //                           h["icon"] as IconData,
+                //                           size: 16,
+                //                           color: accent,
+                //                         ),
+                //                       ),
+                //                       const SizedBox(width: 8),
+                //                       Expanded(
+                //                         child: Text(
+                //                           h["label"] as String,
+                //                           maxLines: 2,
+                //                           style: TextStyle(
+                //                             fontSize: 12,
+                //                             fontWeight: FontWeight.w600,
+                //                             color: textPri,
+                //                             height: 1.3,
+                //                           ),
+                //                         ),
+                //                       ),
+                //                     ],
+                //                   ),
+                //                 ),
+                //               )
+                //               .toList(),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
 
                 // ── Nearby places ────────────────────────────
                 SliverToBoxAdapter(
@@ -463,73 +464,72 @@ class _TownDetailScreenState extends State<TownDetailScreen> {
                 ),
 
                 // ── Best time card ───────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? AppColors.primary.withValues(alpha: 0.2)
-                            : AppColors.cardLight,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: divider),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: accent.withValues(
-                                alpha: isDark ? 0.3 : 0.12,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              Icons.calendar_month_rounded,
-                              color: accent,
-                              size: 22,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Best Time to Visit",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: textPri,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  widget.town.bestTime,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: textSec,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  "Weather: ${widget.town.weather}",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: textSec,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
+                // SliverToBoxAdapter(
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                //     child: Container(
+                //       padding: const EdgeInsets.all(16),
+                //       decoration: BoxDecoration(
+                //         color: isDark
+                //             ? AppColors.primary.withValues(alpha: 0.2)
+                //             : AppColors.cardLight,
+                //         borderRadius: BorderRadius.circular(16),
+                //         border: Border.all(color: divider),
+                //       ),
+                //       child: Row(
+                //         crossAxisAlignment: CrossAxisAlignment.start,
+                //         children: [
+                //           Container(
+                //             padding: const EdgeInsets.all(10),
+                //             decoration: BoxDecoration(
+                //               color: accent.withValues(
+                //                 alpha: isDark ? 0.3 : 0.12,
+                //               ),
+                //               borderRadius: BorderRadius.circular(12),
+                //             ),
+                //             child: Icon(
+                //               Icons.calendar_month_rounded,
+                //               color: accent,
+                //               size: 22,
+                //             ),
+                //           ),
+                //           const SizedBox(width: 14),
+                //           Expanded(
+                //             child: Column(
+                //               crossAxisAlignment: CrossAxisAlignment.start,
+                //               children: [
+                //                 Text(
+                //                   "Best Time to Visit",
+                //                   style: TextStyle(
+                //                     fontSize: 14,
+                //                     fontWeight: FontWeight.w700,
+                //                     color: textPri,
+                //                   ),
+                //                 ),
+                //                 const SizedBox(height: 4),
+                //                 Text(
+                //                   widget.town.bestTime,
+                //                   style: TextStyle(
+                //                     fontSize: 13,
+                //                     color: textSec,
+                //                   ),
+                //                 ),
+                //                 const SizedBox(height: 2),
+                //                 Text(
+                //                   "Weather: ${widget.town.weather}",
+                //                   style: TextStyle(
+                //                     fontSize: 13,
+                //                     color: textSec,
+                //                   ),
+                //                 ),
+                //               ],
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 const SliverToBoxAdapter(child: SizedBox(height: 110)),
               ],
             ),
@@ -577,7 +577,19 @@ class _TownDetailScreenState extends State<TownDetailScreen> {
                           icon: Icons.ios_share_rounded,
                           scrolled: headerOpacity > 0.5,
                           isDark: isDark,
-                          onTap: () {},
+                          onTap: () {
+                            // share externally
+                            SharePlus.instance.share(
+                              ShareParams(
+                                subject: widget.town.name,
+                                text:
+                                    '📍 ${widget.town.name}\n'
+                                    '${widget.town.fullLocation}\n\n'
+                                    '${widget.town.desc}\n\n'
+                                    '🗺️ https://www.google.com/maps/search/?api=1&query=${widget.town.latitude},${widget.town.longitude}',
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -671,62 +683,62 @@ class _SectionTitle extends StatelessWidget {
   );
 }
 
-class _StatItem extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String value;
-  final String label;
-  final Color textPri;
-  final Color textSec;
+// class _StatItem extends StatelessWidget {
+//   final IconData icon;
+//   final Color iconColor;
+//   final String value;
+//   final String label;
+//   final Color textPri;
+//   final Color textSec;
 
-  const _StatItem({
-    required this.icon,
-    required this.iconColor,
-    required this.value,
-    required this.label,
-    required this.textPri,
-    required this.textSec,
-  });
+//   const _StatItem({
+//     required this.icon,
+//     required this.iconColor,
+//     required this.value,
+//     required this.label,
+//     required this.textPri,
+//     required this.textSec,
+//   });
 
-  @override
-  Widget build(BuildContext context) => Expanded(
-    child: Column(
-      children: [
-        Icon(icon, color: iconColor, size: 22),
-        const SizedBox(height: 5),
-        Text(
-          value,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: textPri,
-            letterSpacing: -0.2,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 9,
-            fontWeight: FontWeight.w600,
-            color: textSec,
-            letterSpacing: 0.8,
-          ),
-        ),
-      ],
-    ),
-  );
-}
+//   @override
+//   Widget build(BuildContext context) => Expanded(
+//     child: Column(
+//       children: [
+//         Icon(icon, color: iconColor, size: 22),
+//         const SizedBox(height: 5),
+//         Text(
+//           value,
+//           textAlign: TextAlign.center,
+//           style: TextStyle(
+//             fontSize: 13,
+//             fontWeight: FontWeight.w700,
+//             color: textPri,
+//             letterSpacing: -0.2,
+//           ),
+//         ),
+//         const SizedBox(height: 2),
+//         Text(
+//           label,
+//           style: TextStyle(
+//             fontSize: 9,
+//             fontWeight: FontWeight.w600,
+//             color: textSec,
+//             letterSpacing: 0.8,
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
-class _VertDivider extends StatelessWidget {
-  final Color color;
-  const _VertDivider({required this.color});
+// class _VertDivider extends StatelessWidget {
+//   final Color color;
+//   const _VertDivider({required this.color});
 
-  @override
-  Widget build(BuildContext context) =>
-      Container(width: 1, height: 40, color: color);
-}
+//   @override
+//   Widget build(BuildContext context) =>
+//       Container(width: 1, height: 40, color: color);
+// }
 
 class _CircleButton extends StatelessWidget {
   final IconData icon;

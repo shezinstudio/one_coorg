@@ -120,57 +120,57 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 ),
 
                 // ── Stats row ──────────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      decoration: BoxDecoration(
-                        color: cardBg,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: divider),
-                        boxShadow: isDark
-                            ? []
-                            : [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.07,
-                                  ),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                      ),
-                      child: Row(
-                        children: [
-                          _StatItem(
-                            icon: Icons.star_rounded,
-                            iconColor: const Color(0xFFFFC107),
-                            value: p.rating.toString(),
-                            label: "RATING",
-                            isDark: isDark,
-                          ),
-                          _VertDivider(isDark: isDark),
-                          _StatItem(
-                            icon: Icons.schedule_rounded,
-                            iconColor: AppColors.primaryLight,
-                            value: p.duration,
-                            label: "DURATION",
-                            isDark: isDark,
-                          ),
-                          _VertDivider(isDark: isDark),
-                          _StatItem(
-                            icon: Icons.thermostat_rounded,
-                            iconColor: const Color(0xFF1565C0),
-                            value: p.temp,
-                            label: "TEMP",
-                            isDark: isDark,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                // SliverToBoxAdapter(
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                //     child: Container(
+                //       padding: const EdgeInsets.symmetric(vertical: 18),
+                //       decoration: BoxDecoration(
+                //         color: cardBg,
+                //         borderRadius: BorderRadius.circular(18),
+                //         border: Border.all(color: divider),
+                //         boxShadow: isDark
+                //             ? []
+                //             : [
+                //                 BoxShadow(
+                //                   color: AppColors.primary.withValues(
+                //                     alpha: 0.07,
+                //                   ),
+                //                   blurRadius: 14,
+                //                   offset: const Offset(0, 4),
+                //                 ),
+                //               ],
+                //       ),
+                //       child: Row(
+                //         children: [
+                //           _StatItem(
+                //             icon: Icons.star_rounded,
+                //             iconColor: const Color(0xFFFFC107),
+                //             value: p.rating.toString(),
+                //             label: "RATING",
+                //             isDark: isDark,
+                //           ),
+                //           _VertDivider(isDark: isDark),
+                //           _StatItem(
+                //             icon: Icons.schedule_rounded,
+                //             iconColor: AppColors.primaryLight,
+                //             value: p.duration,
+                //             label: "DURATION",
+                //             isDark: isDark,
+                //           ),
+                //           _VertDivider(isDark: isDark),
+                //           _StatItem(
+                //             icon: Icons.thermostat_rounded,
+                //             iconColor: const Color(0xFF1565C0),
+                //             value: p.temp,
+                //             label: "TEMP",
+                //             isDark: isDark,
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
 
                 // ── About ───────────────────────────────────
                 SliverToBoxAdapter(
@@ -327,107 +327,106 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 ),
 
                 // ── Map tile ────────────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _SectionTitle(title: "Location", textPri: textPri),
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: Stack(
-                            children: [
-                              Image.network(
-                                "https://tile.openstreetmap.org/14/"
-                                "${_lngToTileX(p.lng, 14)}/"
-                                "${_latToTileY(p.lat, 14)}.png",
-                                height: 160,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => Container(
-                                  height: 160,
-                                  color: isDark
-                                      ? AppColors.surfaceDark
-                                      : AppColors.cardLight,
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.map_outlined,
-                                      color: textSec,
-                                      size: 36,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              // Pin overlay
-                              Positioned.fill(
-                                child: Center(
-                                  child: Icon(
-                                    Icons.location_on_rounded,
-                                    color: AppColors.accent,
-                                    size: 32,
-                                  ),
-                                ),
-                              ),
-                              // Label chip
-                              Positioned(
-                                bottom: 10,
-                                left: 10,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.92),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    p.mapLabel,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF1B2E1B),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              // Open map text button
-                              Positioned(
-                                bottom: 10,
-                                right: 10,
-                                child: GestureDetector(
-                                  onTap: _openDirections,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.accent,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Text(
-                                      "OPEN MAP",
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
+                // SliverToBoxAdapter(
+                //   child: Padding(
+                //     padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         _SectionTitle(title: "Location", textPri: textPri),
+                //         const SizedBox(height: 12),
+                //         ClipRRect(
+                //           borderRadius: BorderRadius.circular(18),
+                //           child: Stack(
+                //             children: [
+                //               Image.network(
+                //                 "https://tile.openstreetmap.org/14/"
+                //                 "${_lngToTileX(p.lng, 14)}/"
+                //                 "${_latToTileY(p.lat, 14)}.png",
+                //                 height: 160,
+                //                 width: double.infinity,
+                //                 fit: BoxFit.cover,
+                //                 errorBuilder: (_, _, _) => Container(
+                //                   height: 160,
+                //                   color: isDark
+                //                       ? AppColors.surfaceDark
+                //                       : AppColors.cardLight,
+                //                   child: Center(
+                //                     child: Icon(
+                //                       Icons.map_outlined,
+                //                       color: textSec,
+                //                       size: 36,
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ),
+                //               // Pin overlay
+                //               Positioned.fill(
+                //                 child: Center(
+                //                   child: Icon(
+                //                     Icons.location_on_rounded,
+                //                     color: AppColors.accent,
+                //                     size: 32,
+                //                   ),
+                //                 ),
+                //               ),
+                //               // Label chip
+                //               Positioned(
+                //                 bottom: 10,
+                //                 left: 10,
+                //                 child: Container(
+                //                   padding: const EdgeInsets.symmetric(
+                //                     horizontal: 10,
+                //                     vertical: 5,
+                //                   ),
+                //                   decoration: BoxDecoration(
+                //                     color: Colors.white.withValues(alpha: 0.92),
+                //                     borderRadius: BorderRadius.circular(8),
+                //                   ),
+                //                   child: Text(
+                //                     p.mapLabel,
+                //                     style: const TextStyle(
+                //                       fontSize: 12,
+                //                       fontWeight: FontWeight.w600,
+                //                       color: Color(0xFF1B2E1B),
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ),
+                //               // Open map text button
+                //               Positioned(
+                //                 bottom: 10,
+                //                 right: 10,
+                //                 child: GestureDetector(
+                //                   onTap: _openDirections,
+                //                   child: Container(
+                //                     padding: const EdgeInsets.symmetric(
+                //                       horizontal: 10,
+                //                       vertical: 5,
+                //                     ),
+                //                     decoration: BoxDecoration(
+                //                       color: AppColors.accent,
+                //                       borderRadius: BorderRadius.circular(8),
+                //                     ),
+                //                     child: const Text(
+                //                       "OPEN MAP",
+                //                       style: TextStyle(
+                //                         fontSize: 10,
+                //                         fontWeight: FontWeight.w700,
+                //                         color: Colors.white,
+                //                         letterSpacing: 0.5,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
                 const SliverToBoxAdapter(child: SizedBox(height: 110)),
               ],
             ),
@@ -611,17 +610,17 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     );
   }
 
-  // OSM tile coordinate helpers
-  int _lngToTileX(double lng, int zoom) =>
-      ((lng + 180) / 360 * (1 << zoom)).floor();
+  // // OSM tile coordinate helpers
+  // int _lngToTileX(double lng, int zoom) =>
+  //     ((lng + 180) / 360 * (1 << zoom)).floor();
 
-  int _latToTileY(double lat, int zoom) {
-    final latRad = lat * 3.141592653589793 / 180;
-    return ((1 - (log(tan(latRad) + 1 / cos(latRad)) / 3.141592653589793)) /
-            2 *
-            (1 << zoom))
-        .floor();
-  }
+  // int _latToTileY(double lat, int zoom) {
+  //   final latRad = lat * 3.141592653589793 / 180;
+  //   return ((1 - (log(tan(latRad) + 1 / cos(latRad)) / 3.141592653589793)) /
+  //           2 *
+  //           (1 << zoom))
+  //       .floor();
+  // }
 }
 
 // ignore: non_constant_identifier_names
@@ -801,71 +800,6 @@ class _SectionTitle extends StatelessWidget {
       color: textPri,
       letterSpacing: -0.3,
     ),
-  );
-}
-
-class _StatItem extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String value;
-  final String label;
-  final bool isDark;
-
-  const _StatItem({
-    required this.icon,
-    required this.iconColor,
-    required this.value,
-    required this.label,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final Color textPri = isDark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
-    final Color textSec = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: iconColor, size: 24),
-          const SizedBox(height: 6),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: textPri,
-              letterSpacing: -0.3,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: textSec,
-              letterSpacing: 0.8,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _VertDivider extends StatelessWidget {
-  final bool isDark;
-  const _VertDivider({required this.isDark});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 1,
-    height: 40,
-    color: isDark ? AppColors.dividerDark : AppColors.dividerLight,
   );
 }
 

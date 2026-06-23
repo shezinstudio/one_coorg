@@ -8,6 +8,7 @@ class IntroPageFour extends StatelessWidget {
   Widget build(BuildContext context) {
     return const IntroPageTemplate(
       imagePath: "assets/images/screen_four.png",
+      eyebrow: "Immerse",
       title: "Seek Culture & Nature with Explorer",
       description:
           "Navigate from iconic landmarks to local heritage sites. Immerse yourself in the vibrant culture and nature that defines Coorg's unique charm.",

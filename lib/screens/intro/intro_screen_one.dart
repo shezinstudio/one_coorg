@@ -8,6 +8,7 @@ class IntroScreenOne extends StatelessWidget {
   Widget build(BuildContext context) {
     return const IntroPageTemplate(
       imagePath: "assets/images/screen_one.png",
+      eyebrow: "Arrival",
       title: "The Journey Begins in Coorg",
       description:
           "Embark on your adventure with Coorg Explorer. Discover the heart of this stunning hill station and unlock the secrets of its misty landscapes.",

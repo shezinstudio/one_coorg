@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:one_coorg/screens/home/town_detail_screen.dart';
-import 'package:flutter/material.dart';
 
+// ── Model ─────────────────────────────────────────────────
 class Town {
   final String name;
   final String aka;
@@ -10,11 +12,11 @@ class Town {
   final String imagePath;
   final String fullLocation;
   final String about;
-  final List<Map<String, dynamic>> highlights;
   final List<Map<String, dynamic>> nearbyPlaces;
-  final String bestTime;
   final String weather;
   final String population;
+  final double latitude;
+  final double longitude;
 
   const Town({
     required this.name,
@@ -24,224 +26,58 @@ class Town {
     required this.imagePath,
     required this.fullLocation,
     required this.about,
-    required this.highlights,
     required this.nearbyPlaces,
-    required this.bestTime,
     required this.weather,
     required this.population,
+    required this.latitude,
+    required this.longitude,
   });
+
+  factory Town.fromJson(Map<String, dynamic> json) {
+    return Town(
+      name: json['name'],
+      aka: json['aka'],
+      desc: json['description'],
+      emoji: json['emoji'],
+      imagePath: json['image_path'],
+      fullLocation: json['full_location'],
+      about: json['about'],
+      nearbyPlaces: List<Map<String, dynamic>>.from(json['nearby_places']),
+      weather: json['weather'],
+      population: json['population'],
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+    );
+  }
 }
 
-const List<Town> allTowns = [
-  Town(
-    name: "Madikeri",
-    aka: "Mercara",
-    emoji: "🏛️",
-    imagePath: "assets/images/madikeri.jpg",
-    fullLocation: "Madikeri, Kodagu, Karnataka",
-    desc:
-        "The capital of Kodagu — home to Raja's Seat, Omkareshwara Temple, and misty viewpoints.",
-    about:
-        "Madikeri, also known as Mercara, is the headquarters of Kodagu district and sits at an elevation of 1,525 metres in the Western Ghats. Surrounded by mist-covered hills and lush coffee estates, the town is a blend of Kodava heritage, colonial history, and natural beauty. The winding roads leading into town through coffee and cardamom plantations set the mood for everything Coorg has to offer.",
-    highlights: [
-      {
-        "label": "Raja's Seat",
-        "icon": Icons.landscape_rounded,
-        "desc": "Famous sunset viewpoint used by Coorg kings",
-      },
-      {
-        "label": "Omkareshwara Temple",
-        "icon": Icons.temple_hindu_rounded,
-        "desc": "200-year-old temple with Indo-Saracenic architecture",
-      },
-      {
-        "label": "Madikeri Fort",
-        "icon": Icons.fort_rounded,
-        "desc": "Historic fort built by Mudduraja in the 17th century",
-      },
-      {
-        "label": "Abbey Falls",
-        "icon": Icons.water_rounded,
-        "desc": "Stunning 70ft waterfall through coffee estates",
-      },
-    ],
-    nearbyPlaces: [
-      {"name": "Abbey Falls", "dist": "8 km"},
-      {"name": "Mandalpatti", "dist": "28 km"},
-      {"name": "Bhagamandala", "dist": "38 km"},
-    ],
-    bestTime: "October to March",
-    weather: "18–26°C",
-    population: "~33,000",
-  ),
-  Town(
-    name: "Virajpet",
-    aka: "Virarajendrapet",
-    emoji: "🌳",
-    imagePath: "assets/images/virajpete.jpg",
-    fullLocation: "Virajpet, Kodagu, Karnataka",
-    desc:
-        "Gateway to Nagarhole and Brahmagiri, rich in Kodava culture and wildlife trails.",
-    about:
-        "Virajpet, the second largest town in Kodagu, serves as the gateway to some of the most pristine forests and wildlife reserves in South India. The town retains a strong Kodava cultural identity, with traditional 'Ainmane' ancestral homes dotting the surrounding villages. It is the base for exploring the Brahmagiri range and the vast Nagarhole forests.",
-    highlights: [
-      {
-        "label": "Nagarhole Park",
-        "icon": Icons.forest_rounded,
-        "desc": "Tiger reserve with diverse wildlife",
-      },
-      {
-        "label": "Brahmagiri Trek",
-        "icon": Icons.hiking_rounded,
-        "desc": "Challenging trek through dense forest",
-      },
-      {
-        "label": "Iruppu Falls",
-        "icon": Icons.water_rounded,
-        "desc": "Sacred waterfall near Brahmagiri",
-      },
-      {
-        "label": "Kodava Culture",
-        "icon": Icons.museum_rounded,
-        "desc": "Traditional Kodava heritage & festivals",
-      },
-    ],
-    nearbyPlaces: [
-      {"name": "Nagarhole", "dist": "25 km"},
-      {"name": "Iruppu Falls", "dist": "55 km"},
-      {"name": "Gonikoppal", "dist": "20 km"},
-    ],
-    bestTime: "November to April",
-    weather: "20–30°C",
-    population: "~25,000",
-  ),
-  Town(
-    name: "Kushalnagar",
-    aka: "Little Tibet",
-    emoji: "🏔️",
-    imagePath: "assets/images/kushalnagara.jpg",
-    fullLocation: "Kushalnagar, Kodagu, Karnataka",
-    desc:
-        "Home to the Tibetan settlement, golden temples, and Dubare Elephant Camp.",
-    about:
-        "Kushalnagar, fondly called 'Little Tibet', is home to the Namdroling Monastery — one of the largest Nyingma teaching centres in the world, famous for its stunning Golden Temple. The town sits along the Cauvery river and is the entry point to Coorg from Mysuru. The vibrant Tibetan community has brought a unique cultural layer to this part of Kodagu.",
-    highlights: [
-      {
-        "label": "Golden Temple",
-        "icon": Icons.temple_buddhist_rounded,
-        "desc": "Namdroling Monastery's stunning centrepiece",
-      },
-      {
-        "label": "Dubare Elephant Camp",
-        "icon": Icons.forest_rounded,
-        "desc": "Bathe & feed elephants on the Cauvery",
-      },
-      {
-        "label": "Bylakuppe",
-        "icon": Icons.location_city_rounded,
-        "desc": "Largest Tibetan settlement in India",
-      },
-      {
-        "label": "Cauvery Riverbank",
-        "icon": Icons.water_rounded,
-        "desc": "Scenic picnic & rafting spots",
-      },
-    ],
-    nearbyPlaces: [
-      {"name": "Dubare", "dist": "9 km"},
-      {"name": "Bylakuppe", "dist": "10 km"},
-      {"name": "Madikeri", "dist": "36 km"},
-    ],
-    bestTime: "October to February",
-    weather: "18–28°C",
-    population: "~15,000",
-  ),
-  Town(
-    name: "Somwarpet",
-    aka: "Coffee Town",
-    emoji: "☕",
-    imagePath: "assets/images/somwarpet.png",
-    fullLocation: "Somwarpet, Kodagu, Karnataka",
-    desc:
-        "Coorg's coffee heartland — rolling estates, misty mornings, and serene village life.",
-    about:
-        "Somwarpet taluk is the heartbeat of Coorg's famous coffee culture. Vast plantations of arabica and robusta coffee stretch across rolling hills, and the air carries the heady fragrance of coffee blossoms in season. The town itself is quiet and unhurried, making it a favourite for those seeking an authentic, off-the-beaten-track Coorg experience away from the tourist crowd.",
-    highlights: [
-      {
-        "label": "Coffee Estates",
-        "icon": Icons.eco_rounded,
-        "desc": "Guided tours of working coffee plantations",
-      },
-      {
-        "label": "Chelavara Falls",
-        "icon": Icons.water_rounded,
-        "desc": "Secluded waterfall through forest trails",
-      },
-      {
-        "label": "Harangi Reservoir",
-        "icon": Icons.water_damage_rounded,
-        "desc": "Scenic dam surrounded by forests",
-      },
-      {
-        "label": "Spice Plantations",
-        "icon": Icons.grass_rounded,
-        "desc": "Pepper, cardamom & vanilla estates",
-      },
-    ],
-    nearbyPlaces: [
-      {"name": "Chelavara Falls", "dist": "15 km"},
-      {"name": "Harangi Dam", "dist": "18 km"},
-      {"name": "Madikeri", "dist": "25 km"},
-    ],
-    bestTime: "September to March",
-    weather: "18–28°C",
-    population: "~18,000",
-  ),
-  Town(
-    name: "Gonikoppal",
-    aka: "Spice Capital",
-    emoji: "🌶️",
-    imagePath: "assets/images/gonikoppal.jpg",
-    fullLocation: "Gonikoppal, Kodagu, Karnataka",
-    desc:
-        "A quaint town surrounded by pepper and cardamom plantations near Iruppu Falls.",
-    about:
-        "Gonikoppal is a charming small town in the Virajpet taluk, best known as the spice trading hub of Coorg. The weekly market draws farmers from surrounding villages who bring fresh pepper, cardamom, and ginger. The town is also the nearest base for visiting the sacred Iruppu Falls and the Brahmagiri Wildlife Sanctuary, making it popular with nature lovers and pilgrims alike.",
-    highlights: [
-      {
-        "label": "Spice Market",
-        "icon": Icons.storefront_rounded,
-        "desc": "Weekly market with fresh local spices",
-      },
-      {
-        "label": "Iruppu Falls",
-        "icon": Icons.water_rounded,
-        "desc": "Sacred waterfall & Shiva temple",
-      },
-      {
-        "label": "Brahmagiri WLS",
-        "icon": Icons.forest_rounded,
-        "desc": "Biodiversity hotspot on the Kerala border",
-      },
-      {
-        "label": "Pepper Estates",
-        "icon": Icons.grass_rounded,
-        "desc": "Authentic spice plantation walks",
-      },
-    ],
-    nearbyPlaces: [
-      {"name": "Iruppu Falls", "dist": "32 km"},
-      {"name": "Brahmagiri", "dist": "35 km"},
-      {"name": "Virajpet", "dist": "20 km"},
-    ],
-    bestTime: "October to April",
-    weather: "20–30°C",
-    population: "~12,000",
-  ),
-];
+// ── Repository ────────────────────────────────────────────
+class TownsRepository {
+  final _client = Supabase.instance.client;
 
-class TownsScreen extends StatelessWidget {
+  Future<List<Town>> fetchTowns() async {
+    final data = await _client.from('towns').select().order('id');
+    return (data as List).map((row) => Town.fromJson(row)).toList();
+  }
+}
+
+// ── Screen ────────────────────────────────────────────────
+class TownsScreen extends StatefulWidget {
   const TownsScreen({super.key});
+
+  @override
+  State<TownsScreen> createState() => _TownsScreenState();
+}
+
+class _TownsScreenState extends State<TownsScreen> {
+  final _repo = TownsRepository();
+  late Future<List<Town>> _townsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _townsFuture = _repo.fetchTowns();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,58 +95,128 @@ class TownsScreen extends StatelessWidget {
     return Container(
       color: bg,
       child: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // ── Header ──────────────────────────────────────
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Famous Towns",
-                      style: TextStyle(
-                        fontSize: 34,
-                        fontWeight: FontWeight.w800,
-                        color: textPri,
-                        letterSpacing: -1,
-                        height: 1.1,
+        child: FutureBuilder<List<Town>>(
+          future: _townsFuture,
+          builder: (context, snapshot) {
+            return CustomScrollView(
+              slivers: [
+                // ── Header ──────────────────────────────
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Famous Towns",
+                          style: TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w800,
+                            color: textPri,
+                            letterSpacing: -1,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "Explore Coorg's iconic towns & villages",
+                          style: TextStyle(fontSize: 14, color: textSec),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // ── Loading ──────────────────────────────
+                if (snapshot.connectionState == ConnectionState.waiting)
+                  SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                        strokeWidth: 2.5,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Explore Coorg's iconic towns & villages",
-                      style: TextStyle(fontSize: 14, color: textSec),
+                  )
+                // ── Error ────────────────────────────────
+                else if (snapshot.hasError)
+                  SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.wifi_off_rounded,
+                            size: 48,
+                            color: textSec,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "Couldn't load towns",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textPri,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "Check your connection and try again",
+                            style: TextStyle(fontSize: 13, color: textSec),
+                          ),
+                          const SizedBox(height: 20),
+                          TextButton.icon(
+                            onPressed: () => setState(
+                              () => _townsFuture = _repo.fetchTowns(),
+                            ),
+                            icon: Icon(
+                              Icons.refresh_rounded,
+                              color: AppColors.primary,
+                            ),
+                            label: Text(
+                              "Retry",
+                              style: TextStyle(color: AppColors.primary),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-
-            // ── Towns list ───────────────────────────────────
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => _TownCard(
-                    town: allTowns[index],
-                    isDark: isDark,
-                    textPri: textPri,
-                    textSec: textSec,
+                  )
+                // ── Empty ────────────────────────────────
+                else if (!snapshot.hasData || snapshot.data!.isEmpty)
+                  SliverFillRemaining(
+                    child: Center(
+                      child: Text(
+                        "No towns found",
+                        style: TextStyle(fontSize: 15, color: textSec),
+                      ),
+                    ),
+                  )
+                // ── List ─────────────────────────────────
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => _TownCard(
+                          town: snapshot.data![index],
+                          isDark: isDark,
+                          textPri: textPri,
+                          textSec: textSec,
+                        ),
+                        childCount: snapshot.data!.length,
+                      ),
+                    ),
                   ),
-                  childCount: allTowns.length,
-                ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
 
-// ── Town card ─────────────────────────────────────────────
+// ── Town Card ─────────────────────────────────────────────
 class _TownCard extends StatelessWidget {
   final Town town;
   final bool isDark;
@@ -355,7 +261,7 @@ class _TownCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Image ────────────────────────────────────
+            // ── Image ──────────────────────────────────
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),
@@ -403,7 +309,7 @@ class _TownCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Town name on image
+                  // Town name + aka pill
                   Positioned(
                     bottom: 12,
                     left: 14,
@@ -421,7 +327,6 @@ class _TownCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // Aka pill
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
@@ -447,7 +352,7 @@ class _TownCard extends StatelessWidget {
               ),
             ),
 
-            // ── Description + arrow ───────────────────────
+            // ── Description + arrow ────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
               child: Row(
