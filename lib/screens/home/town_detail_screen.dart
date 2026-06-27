@@ -352,7 +352,7 @@ class _TownDetailScreenState extends State<TownDetailScreen> {
                 // ── Nearby places ────────────────────────────
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

@@ -1,11 +1,34 @@
+import 'package:one_coorg/services/rewarded_ad_service.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
+
+  static const String _razorpayLink = "https://razorpay.me/@sajid6679";
+
+  @override
+  State<AboutScreen> createState() => _AboutScreenState();
+}
+
+class _AboutScreenState extends State<AboutScreen> {
+  final _rewardedAd = RewardedAdService();
+  bool _adWatched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _rewardedAd.load();
+  }
+
+  @override
+  void dispose() {
+    _rewardedAd.dispose();
+    super.dispose();
+  }
 
   Future<void> _launchUrl(String url) async {
     final uri = Uri.parse(url);
@@ -157,6 +180,39 @@ class AboutScreen extends StatelessWidget {
                               letterSpacing: 0.3,
                             ),
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // ── Support me ───────────────────────────────────
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _SectionHeader(
+                          title: "Support the Developer",
+                          textPri: textPri,
+                        ),
+                        const SizedBox(height: 12),
+                        _SupportButton(
+                          isDark: isDark,
+                          onTap: () => _launchUrl(AboutScreen._razorpayLink),
+                        ),
+                        const SizedBox(height: 12),
+                        _WatchAdButton(
+                          isDark: isDark,
+                          isReady: _rewardedAd.isReady,
+                          watched: _adWatched,
+                          onTap: () {
+                            _rewardedAd.show(
+                              onEarned: (_, _) =>
+                                  setState(() => _adWatched = true),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -472,6 +528,95 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
+// ── Support button ────────────────────────────────────────
+// A standalone CTA (distinct from the plain link rows below) that opens the
+// Razorpay payment link so users can tip / support development directly.
+class _SupportButton extends StatelessWidget {
+  final bool isDark;
+  final VoidCallback onTap;
+
+  const _SupportButton({required this.isDark, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isDark
+                  ? [const Color(0xFF7B341E), const Color(0xFFB7472A)]
+                  : [const Color(0xFFFF7A59), const Color(0xFFE94F37)],
+            ),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFE94F37).withValues(alpha: 0.3),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.favorite_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Buy me a coffee ☕",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      "Enjoying One Coorg? Support its development.",
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Colors.white.withValues(alpha: 0.85),
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 13,
+                color: Colors.white.withValues(alpha: 0.85),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // ── Feature item ──────────────────────────────────────────
 class _FeatureItem extends StatelessWidget {
   final IconData icon;
@@ -703,6 +848,118 @@ class _LinkRow extends StatelessWidget {
         if (!isLast)
           Divider(height: 1, color: divider, indent: 52, endIndent: 18),
       ],
+    );
+  }
+}
+
+class _WatchAdButton extends StatelessWidget {
+  final bool isDark;
+  final bool isReady;
+  final bool watched;
+  final VoidCallback onTap;
+
+  const _WatchAdButton({
+    required this.isDark,
+    required this.isReady,
+    required this.watched,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: isReady && !watched ? onTap : null,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: watched
+                  ? [const Color(0xFF388E3C), const Color(0xFF2E7D32)]
+                  : isReady
+                  ? isDark
+                        ? [const Color(0xFF1A237E), const Color(0xFF283593)]
+                        : [const Color(0xFF3949AB), const Color(0xFF1A237E)]
+                  : [Colors.grey.shade600, Colors.grey.shade700],
+            ),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color:
+                    (watched
+                            ? Colors.green
+                            : isReady
+                            ? const Color(0xFF3949AB)
+                            : Colors.grey)
+                        .withValues(alpha: 0.3),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  watched
+                      ? Icons.check_circle_rounded
+                      : Icons.play_circle_outline_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      watched
+                          ? "Thank you for the support! 🎉"
+                          : "Support by watching an ad",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      watched
+                          ? "You helped keep One Coorg free."
+                          : isReady
+                          ? "Free & takes just 30 seconds."
+                          : "Ad loading, check back shortly.",
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: Colors.white.withValues(alpha: 0.85),
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              if (!watched)
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 13,
+                  color: Colors.white.withValues(alpha: 0.85),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

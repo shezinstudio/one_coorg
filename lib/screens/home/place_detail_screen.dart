@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:one_coorg/services/interstitial_ad_service.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   final TouristPlace place;
@@ -17,6 +18,7 @@ class PlaceDetailScreen extends StatefulWidget {
 class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   double _scrollOffset = 0;
+  final _interstitialAd = InterstitialAdService();
 
   @override
   void initState() {
@@ -24,11 +26,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     _scrollController.addListener(
       () => setState(() => _scrollOffset = _scrollController.offset),
     );
+    _interstitialAd.load();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _interstitialAd.dispose();
     super.dispose();
   }
 
@@ -264,7 +268,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 // ── Best Time ───────────────────────────────
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -563,7 +567,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: GestureDetector(
-                        onTap: _openDirections,
+                        // onTap: _openDirections,
+                        onTap: () =>
+                            _interstitialAd.showThenDo(_openDirections),
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(

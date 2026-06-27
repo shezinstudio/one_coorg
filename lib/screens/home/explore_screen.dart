@@ -3,38 +3,26 @@ import 'package:one_coorg/screens/home/place_detail_screen.dart';
 import 'package:one_coorg/services/place_service.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:one_coorg/widgets/banner_ad_widget.dart';
 
-// ── Categories ────────────────────────────────────────────
-// const List<Map<String, dynamic>> _categories = [
-//   {"label": "All", "icon": Icons.grid_view_rounded},
-//   {"label": "Waterfalls", "icon": Icons.water_rounded},
-//   {"label": "Wildlife", "icon": Icons.pets_rounded},
-//   {"label": "Temples", "icon": Icons.temple_hindu_rounded},
-//   {"label": "Viewpoints", "icon": Icons.panorama_rounded},
-//   {"label": "Trekking", "icon": Icons.hiking_rounded},
-// ];
+const int _adEvery = 5; // show a banner after every 5 cards
 
 const List<Map<String, dynamic>> _categories = [
   {"label": "All", "icon": Icons.grid_view_rounded},
   {"label": "Waterfalls", "icon": Icons.water_rounded},
-  {"label": "Wildlife", "icon": Icons.pets_rounded},
   {"label": "Temples", "icon": Icons.temple_hindu_rounded},
   {"label": "Viewpoints", "icon": Icons.panorama_rounded},
-  {"label": "Trekking", "icon": Icons.hiking_rounded},
-  {"label": "Plantations", "icon": Icons.forest_rounded},
-  {"label": "Adventure", "icon": Icons.paragliding_rounded},
-  {"label": "Lakes", "icon": Icons.water_damage_rounded},
-  {"label": "Towns", "icon": Icons.location_city_rounded},
-  {"label": "Culture", "icon": Icons.museum_rounded},
+  {"label": "Heritage", "icon": Icons.history_edu_rounded},
+  {"label": "Reservoirs", "icon": Icons.water},
 ];
 
 const Map<String, Color> _categoryAccents = {
   "All": AppColors.primary,
   "Waterfalls": Color(0xFF1565C0),
-  "Wildlife": Color(0xFF6D4C41),
   "Temples": Color(0xFFE65100),
   "Viewpoints": Color(0xFF6A1B9A),
-  "Trekking": AppColors.primaryLight,
+  "Heritage": Color(0xFF6D4C41),
+  "Reservoirs": AppColors.primaryLight,
 };
 
 class ExploreScreen extends StatefulWidget {
@@ -51,16 +39,43 @@ class _ExploreScreenState extends State<ExploreScreen> {
   // Holds the one active future — recreated only when category changes
   late Future<List<TouristPlace>> _placesFuture;
 
+  // In-memory cache keyed by category. Once a category has been fetched in
+  // this session, switching back to it (or revisiting this screen while it
+  // stays mounted) is instant — no network round trip.
+  final Map<String, List<TouristPlace>> _cache = {};
+
   @override
   void initState() {
     super.initState();
-    _placesFuture = PlaceService.fetchPlaces();
+    _placesFuture = _loadPlaces(_selectedCategory);
+  }
+
+  // Fetches (or reuses a cached) list for [category], then hands back a
+  // freshly shuffled COPY. Shuffling a copy — rather than shuffling the
+  // cached list in place — means the cached source order is stable and
+  // every call (cached or not) still produces a new random order, so the
+  // grid reshuffles each time the screen/category loads without needing to
+  // refetch from the network.
+  Future<List<TouristPlace>> _loadPlaces(
+    String category, {
+    bool forceRefresh = false,
+  }) async {
+    List<TouristPlace> places;
+    if (!forceRefresh && _cache.containsKey(category)) {
+      places = _cache[category]!;
+    } else {
+      places = category == "All"
+          ? await PlaceService.fetchPlaces()
+          : await PlaceService.fetchPlaces(category: category);
+      _cache[category] = places;
+    }
+    return List<TouristPlace>.from(places)..shuffle();
   }
 
   void _onCategorySelected(String category) {
     setState(() {
       _selectedCategory = category;
-      _placesFuture = PlaceService.fetchPlaces(category: category);
+      _placesFuture = _loadPlaces(category);
       _searchQuery = ""; // reset search on category switch
     });
   }
@@ -301,13 +316,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
             // ── Places list via FutureBuilder ────────────────
-            SliverToBoxAdapter(
-              child: FutureBuilder<List<TouristPlace>>(
-                future: _placesFuture,
-                builder: (context, snapshot) {
-                  // ── Loading ──────────────────────────────
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Padding(
+            // NOTE: this FutureBuilder is now a direct sliver (not wrapped in
+            // a single SliverToBoxAdapter). Its loading/error/empty states
+            // return SliverToBoxAdapter, but the data state returns a real
+            // SliverList — so cards are built lazily as they scroll into
+            // view instead of all at once.
+            FutureBuilder<List<TouristPlace>>(
+              future: _placesFuture,
+              builder: (context, snapshot) {
+                // ── Loading ──────────────────────────────
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
                       padding: const EdgeInsets.only(top: 60),
                       child: Center(
                         child: CircularProgressIndicator(
@@ -317,12 +337,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           strokeWidth: 2.5,
                         ),
                       ),
-                    );
-                  }
+                    ),
+                  );
+                }
 
-                  // ── Error ────────────────────────────────
-                  if (snapshot.hasError) {
-                    return Padding(
+                // ── Error ────────────────────────────────
+                if (snapshot.hasError) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
                       padding: const EdgeInsets.all(40),
                       child: Column(
                         children: [
@@ -343,8 +365,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           const SizedBox(height: 8),
                           GestureDetector(
                             onTap: () => setState(() {
-                              _placesFuture = PlaceService.fetchPlaces(
-                                category: _selectedCategory,
+                              _placesFuture = _loadPlaces(
+                                _selectedCategory,
+                                forceRefresh: true,
                               );
                             }),
                             child: Text(
@@ -360,14 +383,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           ),
                         ],
                       ),
-                    );
-                  }
+                    ),
+                  );
+                }
 
-                  final filtered = _applySearch(snapshot.data ?? []);
+                final filtered = _applySearch(snapshot.data ?? []);
 
-                  // ── Empty ────────────────────────────────
-                  if (filtered.isEmpty) {
-                    return Padding(
+                // ── Empty ────────────────────────────────
+                if (filtered.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
                       padding: const EdgeInsets.only(top: 60),
                       child: Column(
                         children: [
@@ -387,28 +412,56 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           ),
                         ],
                       ),
-                    );
-                  }
-
-                  // ── List ─────────────────────────────────
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                    child: Column(
-                      children: filtered
-                          .map(
-                            (place) => _PlaceCard(
-                              place: place,
-                              cardBg: cardBg,
-                              textPri: textPri,
-                              textSec: textSec,
-                              isDark: isDark,
-                            ),
-                          )
-                          .toList(),
                     ),
                   );
-                },
-              ),
+                }
+
+                // ── List (lazy) ───────────────────────────
+                // return SliverPadding(
+                //   padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                //   sliver: SliverList(
+                //     delegate: SliverChildBuilderDelegate(
+                //       (context, index) => _PlaceCard(
+                //         place: filtered[index],
+                //         cardBg: cardBg,
+                //         textPri: textPri,
+                //         textSec: textSec,
+                //         isDark: isDark,
+                //       ),
+                //       childCount: filtered.length,
+                //     ),
+                //   ),
+                // );
+
+                return SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        // Every (_adEvery + 1) items, one slot is an ad
+                        final int cyclePos = index % (_adEvery + 1);
+                        if (cyclePos == _adEvery) {
+                          return const BannerAdWidget();
+                        }
+                        final int placeIndex =
+                            (index ~/ (_adEvery + 1)) * _adEvery + cyclePos;
+                        if (placeIndex >= filtered.length) return null;
+                        return _PlaceCard(
+                          place: filtered[placeIndex],
+                          cardBg: cardBg,
+                          textPri: textPri,
+                          textSec: textSec,
+                          isDark: isDark,
+                        );
+                      },
+                      // Total slots = full cycles + remainder + ad count
+                      childCount:
+                          filtered.length +
+                          (filtered.length / _adEvery).floor(),
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -436,6 +489,14 @@ class _PlaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color accent = _categoryAccents[place.category] ?? AppColors.primary;
+
+    // Decode the network image at (roughly) its display resolution instead
+    // of full size — this cuts memory use and decode time a lot for large
+    // source photos, especially noticeable once many cards are on screen.
+    final int decodeWidth =
+        (MediaQuery.of(context).size.width *
+                MediaQuery.of(context).devicePixelRatio)
+            .round();
 
     return GestureDetector(
       onTap: () => Navigator.push(
@@ -474,6 +535,7 @@ class _PlaceCard extends StatelessWidget {
                     height: 190,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    cacheWidth: decodeWidth,
                     loadingBuilder: (_, child, progress) => progress == null
                         ? child
                         : Container(

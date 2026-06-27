@@ -3,7 +3,7 @@ description: "Tourist Guide App for Coorg"
 
 publish_to: "none"
 
-version: 2.0.0+4
+version: 2.0.2+6
 
 environment:
   sdk: ^3.12.2
@@ -18,9 +18,10 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_launcher_icons: ^0.14.4
   supabase_flutter: ^2.14.2
-  share_plus: ^13.1.0
+  share_plus: ^13.2.0
   package_info_plus: ^10.1.0
   google_fonts: ^8.1.0
+  google_mobile_ads: ^9.0.0
 
 dev_dependencies:
   flutter_test:

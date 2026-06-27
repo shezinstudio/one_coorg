@@ -1,3 +1,4 @@
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_coorg/providers/favourites_provider.dart';
 import 'package:one_coorg/splash_screen.dart';
 import 'package:one_coorg/theme/app_theme.dart';
@@ -6,7 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await MobileAds.instance.initialize();
   await Supabase.initialize(
     url: 'https://wacayfyuuugawcwzsqcn.supabase.co',
     // publishableKey: 'sb_publishable_WDyUGVPutJMulZevxZ-T2A_PCbF9ulZ',
