@@ -21,6 +21,9 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   void initState() {
     super.initState();
+    _rewardedAd.onAdLoaded = () {
+      if (mounted) setState(() {}); // ← rebuilds button when ad is ready
+    };
     _rewardedAd.load();
   }
 

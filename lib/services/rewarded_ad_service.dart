@@ -1,10 +1,12 @@
 // lib/services/rewarded_ad_service.dart
+import 'dart:ui';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../core/ad_config.dart';
 
 class RewardedAdService {
   RewardedAd? _ad;
   bool _isLoading = false;
+  VoidCallback? onAdLoaded; // ← add this
 
   void load() {
     if (_isLoading) return;
@@ -16,8 +18,13 @@ class RewardedAdService {
         onAdLoaded: (ad) {
           _ad = ad;
           _isLoading = false;
+          onAdLoaded?.call(); // ← notify the widget
         },
-        onAdFailedToLoad: (error) => _isLoading = false,
+        onAdFailedToLoad: (error) {
+          _isLoading = false;
+          // ignore: avoid_print
+          print('Rewarded ad failed to load: $error'); // ← see the real error
+        },
       ),
     );
   }
@@ -40,5 +47,8 @@ class RewardedAdService {
     _ad!.show(onUserEarnedReward: onEarned);
   }
 
-  void dispose() => _ad?.dispose();
+  void dispose() {
+    onAdLoaded = null;
+    _ad?.dispose();
+  }
 }
