@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1098866228562",
+    "project_id": "onecoorg-b5e50",
+    "storage_bucket": "onecoorg-b5e50.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098866228562:android:728caf2071e1d42d338e8b",
+        "android_client_info": {
+          "package_name": "com.shezinstudio.one_coorg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPFpX-5e39z4c_N0woV8GIlnB1QrY-mDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

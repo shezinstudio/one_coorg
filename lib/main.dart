@@ -1,4 +1,9 @@
+import 'dart:ui';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:one_coorg/firebase_options.dart';
 import 'package:one_coorg/providers/favourites_provider.dart';
 import 'package:one_coorg/splash_screen.dart';
 import 'package:one_coorg/theme/app_theme.dart';
@@ -7,6 +12,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   await MobileAds.instance.initialize();
   await Supabase.initialize(
     url: 'https://wacayfyuuugawcwzsqcn.supabase.co',
@@ -14,6 +21,15 @@ void main() async {
     publishableKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndhY2F5Znl1dXVnYXdjd3pzcWNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNjg5MDMsImV4cCI6MjA5Njg0NDkwM30.kgoi97hUSazLORehFjDFafRbjCLnRt5Blro2WF84sHo',
   );
+
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   runApp(const CoorgExplorerApp());
 }

@@ -217,6 +217,12 @@ class _AboutScreenState extends State<AboutScreen> {
                             );
                           },
                         ),
+
+                        // testing crash
+                        // TextButton(
+                        //   onPressed: () => throw Exception(),
+                        //   child: const Text("Throw Test Exception"),
+                        // ),
                       ],
                     ),
                   ),
