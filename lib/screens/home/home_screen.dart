@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:one_coorg/widgets/banner_ad_widget.dart';
 import 'package:one_coorg/widgets/category_item.dart';
+import 'package:one_coorg/widgets/weather_status.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -71,59 +72,61 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
+                    const WeatherStatus(),
+
                     // Search bar
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: inputBg,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: divider),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.06),
-                            blurRadius: 12,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          // location icon
-                          Icon(
-                            Icons.location_pin,
-                            color: AppColors.primaryLight,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 5),
-                          // Madikeri, Coorg text
-                          const Text(
-                            "Madikeri, Coorg",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondaryLight,
-                            ),
-                          ),
-                          const Spacer(),
-                          // weather details
-                          Icon(
-                            Icons.cloud_outlined,
-                            color: AppColors.primaryLight,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 5),
-                          const Text(
-                            "24C  - Sunny",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.textSecondaryLight,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(
+                    //     horizontal: 16,
+                    //     vertical: 12,
+                    //   ),
+                    //   decoration: BoxDecoration(
+                    //     color: inputBg,
+                    //     borderRadius: BorderRadius.circular(16),
+                    //     border: Border.all(color: divider),
+                    //     boxShadow: [
+                    //       BoxShadow(
+                    //         color: AppColors.primary.withValues(alpha: 0.06),
+                    //         blurRadius: 12,
+                    //         offset: const Offset(0, 3),
+                    //       ),
+                    //     ],
+                    //   ),
+                    //   child: Row(
+                    //     children: [
+                    //       // location icon
+                    //       Icon(
+                    //         Icons.location_pin,
+                    //         color: AppColors.primaryLight,
+                    //         size: 20,
+                    //       ),
+                    //       const SizedBox(width: 5),
+                    //       // Madikeri, Coorg text
+                    //       const Text(
+                    //         "Madikeri, Coorg",
+                    //         style: TextStyle(
+                    //           fontSize: 14,
+                    //           color: AppColors.textSecondaryLight,
+                    //         ),
+                    //       ),
+                    //       const Spacer(),
+                    //       // weather details
+                    //       Icon(
+                    //         Icons.cloud_outlined,
+                    //         color: AppColors.primaryLight,
+                    //         size: 20,
+                    //       ),
+                    //       const SizedBox(width: 5),
+                    //       const Text(
+                    //         "24C  - Sunny",
+                    //         style: TextStyle(
+                    //           fontSize: 14,
+                    //           color: AppColors.textSecondaryLight,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
 
                     // place of  the day
                     const SizedBox(height: 20),
@@ -280,7 +283,7 @@ class HomeScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              'Hidden  Gems',
+                              'Hidden Gems',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -312,7 +315,7 @@ class HomeScreen extends StatelessWidget {
 
                     // hiden gems list
                     SizedBox(
-                      height: 140,
+                      height: 180,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: destinations.length,
@@ -349,15 +352,15 @@ class _DestinationItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: SizedBox(
-        width: 100,
+        width: 150,
         child: Column(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: Image.network(
                 imageUrl,
-                width: 100,
-                height: 90,
+                width: 150,
+                height: 120,
                 fit: BoxFit.cover,
               ),
             ),

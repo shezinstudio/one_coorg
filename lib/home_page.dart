@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   final List<_NavItemData> _navItems = const [
     _NavItemData(icon: Icons.home_rounded, label: "Home"),
 
-    _NavItemData(icon: Icons.terrain_rounded, label: "Explore"),
+    _NavItemData(icon: Icons.search_rounded, label: "Explore"),
     _NavItemData(icon: Icons.location_city_rounded, label: "Towns"),
     _NavItemData(icon: Icons.favorite_rounded, label: "Favourites"),
     _NavItemData(icon: Icons.info_rounded, label: "About"),
