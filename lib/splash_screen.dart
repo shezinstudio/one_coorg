@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
     _animController.forward();
 
     // ── Navigate after delay ─────────────────────────────
-    Future.delayed(const Duration(seconds: 10), () async {
+    Future.delayed(const Duration(seconds: 3), () async {
       final hasSeenIntro = await PreferencesService.hasSeenIntro();
       if (mounted) {
         Navigator.pushReplacement(

@@ -1,6 +1,7 @@
 import 'package:one_coorg/screens/home/about_screen.dart';
 import 'package:one_coorg/screens/home/explore_screen.dart';
 import 'package:one_coorg/screens/home/favourites_screen.dart';
+import 'package:one_coorg/screens/home/home_screen.dart';
 import 'package:one_coorg/screens/home/towns_screen.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,8 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = const [
+    HomeScreen(),
+
     ExploreScreen(),
     TownsScreen(),
     FavouritesScreen(),
@@ -24,6 +27,8 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final List<_NavItemData> _navItems = const [
+    _NavItemData(icon: Icons.home_rounded, label: "Home"),
+
     _NavItemData(icon: Icons.terrain_rounded, label: "Explore"),
     _NavItemData(icon: Icons.location_city_rounded, label: "Towns"),
     _NavItemData(icon: Icons.favorite_rounded, label: "Favourites"),
