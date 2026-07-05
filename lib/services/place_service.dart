@@ -27,4 +27,26 @@ class PlaceService {
     final row = await _db.from('places').select().eq('id', id).single();
     return TouristPlace.fromMap(row);
   }
+
+  // ── Fetch hidden gems — used by home preview + full screen ──
+  static Future<List<TouristPlace>> fetchHiddenGems({
+    String? searchQuery,
+    int? limit,
+  }) async {
+    var query = _db.from('places').select().eq('is_hidden_gem', true);
+
+    if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+      query = query.ilike('name', '%${searchQuery.trim()}%');
+    }
+
+    // order/limit must be chained last — they return a different
+    // builder type than the filter chain above
+    final rows = limit != null
+        ? await query.order('name', ascending: true).limit(limit)
+        : await query.order('name', ascending: true);
+
+    return (rows as List<dynamic>)
+        .map((row) => TouristPlace.fromMap(row as Map<String, dynamic>))
+        .toList();
+  }
 }

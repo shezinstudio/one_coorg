@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:one_coorg/models/tourist_place.dart';
+import 'package:one_coorg/screens/home/hidden_gem_screen.dart';
 import 'package:one_coorg/screens/home/towns_screen.dart';
+import 'package:one_coorg/services/place_service.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:one_coorg/widgets/banner_ad_widget.dart';
 import 'package:one_coorg/widgets/category_item.dart';
@@ -7,8 +10,21 @@ import 'package:one_coorg/widgets/place_of_the_day.dart';
 import 'package:one_coorg/widgets/towns_home_section.dart';
 import 'package:one_coorg/widgets/weather_status.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final Future<List<TouristPlace>> _hiddenGemsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _hiddenGemsFuture = PlaceService.fetchHiddenGems(limit: 10);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -232,29 +248,29 @@ class HomeScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Popular Categories',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: textPri,
                               ),
                             ),
-                            TextButton(
-                              onPressed: () {},
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: const Text(
-                                'View all',
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
+                            // TextButton(
+                            //   onPressed: () {},
+                            //   style: TextButton.styleFrom(
+                            //     padding: EdgeInsets.zero,
+                            //     minimumSize: Size.zero,
+                            //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            //   ),
+                            //   child: const Text(
+                            //     'View all',
+                            //     style: TextStyle(
+                            //       color: Colors.green,
+                            //       fontWeight: FontWeight.w600,
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -285,16 +301,23 @@ class HomeScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Hidden Gems',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: textPri,
                               ),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => HiddenGemScreen(),
+                                  ),
+                                );
+                              },
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 minimumSize: Size.zero,
@@ -314,17 +337,54 @@ class HomeScreen extends StatelessWidget {
                         // hiden gems list
                         SizedBox(
                           height: 180,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: destinations.length,
-                            itemBuilder: (context, index) {
-                              return _DestinationItem(
-                                imageUrl: destinations[index].imageUrl,
-                                label: destinations[index].label,
+                          child: FutureBuilder<List<TouristPlace>>(
+                            future: _hiddenGemsFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              if (snapshot.hasError) {
+                                return Center(
+                                  child: Text(
+                                    'Failed to load: ${snapshot.error}',
+                                  ),
+                                );
+                              }
+                              final places = snapshot.data ?? [];
+                              if (places.isEmpty) {
+                                return const Center(
+                                  child: Text('No hidden gems yet'),
+                                );
+                              }
+                              return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: places.length,
+                                itemBuilder: (context, index) {
+                                  return _DestinationItem(
+                                    imageUrl: places[index].imageUrl,
+                                    label: places[index].name,
+                                  );
+                                },
                               );
                             },
                           ),
                         ),
+                        // SizedBox(
+                        //   height: 180,
+                        //   child: ListView.builder(
+                        //     scrollDirection: Axis.horizontal,
+                        //     itemCount: destinations.length,
+                        //     itemBuilder: (context, index) {
+                        //       return _DestinationItem(
+                        //         imageUrl: destinations[index].imageUrl,
+                        //         label: destinations[index].label,
+                        //       );
+                        //     },
+                        //   ),
+                        // ),
 
                         // Horizontal scrollable hidden gem list
                       ],
@@ -338,12 +398,12 @@ class HomeScreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Famous Towns',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: textPri,
                               ),
                             ),
                             TextButton(
@@ -428,43 +488,3 @@ class _DestinationItem extends StatelessWidget {
     );
   }
 }
-
-class Destination {
-  final String imageUrl;
-  final String label;
-
-  Destination({required this.imageUrl, required this.label});
-}
-
-final destinations = [
-  Destination(
-    imageUrl:
-        'https://wacayfyuuugawcwzsqcn.supabase.co/storage/v1/object/public/place-images/chelavara_falls.jpg',
-    label: 'Chelavara Falls',
-  ),
-  Destination(
-    imageUrl:
-        'https://wacayfyuuugawcwzsqcn.supabase.co/storage/v1/object/public/place-images/brahmagiri.jpg',
-    label: 'Chiklihole Reservoir',
-  ),
-  Destination(
-    imageUrl:
-        'https://wacayfyuuugawcwzsqcn.supabase.co/storage/v1/object/public/place-images/chelavara_falls.jpg',
-    label: 'Chelavara Falls',
-  ),
-  Destination(
-    imageUrl:
-        'https://wacayfyuuugawcwzsqcn.supabase.co/storage/v1/object/public/place-images/brahmagiri.jpg',
-    label: 'Chiklihole Reservoir',
-  ),
-  Destination(
-    imageUrl:
-        'https://wacayfyuuugawcwzsqcn.supabase.co/storage/v1/object/public/place-images/brahmagiri.jpg',
-    label: 'Nishani Motts',
-  ),
-  Destination(
-    imageUrl:
-        'https://wacayfyuuugawcwzsqcn.supabase.co/storage/v1/object/public/place-images/brahmagiri.jpg',
-    label: 'Nishani Motts',
-  ),
-];

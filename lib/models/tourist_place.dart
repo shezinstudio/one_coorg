@@ -47,6 +47,8 @@ class TouristPlace {
   final bool isFamilyFriendly; // Supabase column: is_family_friendly
   final bool isAdventure; // Supabase column: is_adventure
 
+  final bool isHiddenGem;
+
   const TouristPlace({
     required this.id,
     required this.name,
@@ -69,6 +71,7 @@ class TouristPlace {
     required this.lng,
     this.isFamilyFriendly = false,
     this.isAdventure = false,
+    this.isHiddenGem = false,
   });
 
   // Deserialise a Supabase row into a TouristPlace
@@ -100,6 +103,7 @@ class TouristPlace {
       lng: (map['lng'] as num?)?.toDouble() ?? 75.7382,
       isFamilyFriendly: map['is_family_friendly'] as bool? ?? false,
       isAdventure: map['is_adventure'] as bool? ?? false,
+      isHiddenGem: map['is_hidden_gem'] as bool? ?? false,
     );
   }
 
