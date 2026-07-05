@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:one_coorg/screens/home/towns_screen.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:one_coorg/widgets/banner_ad_widget.dart';
 import 'package:one_coorg/widgets/category_item.dart';
+import 'package:one_coorg/widgets/place_of_the_day.dart';
+import 'package:one_coorg/widgets/towns_home_section.dart';
 import 'package:one_coorg/widgets/weather_status.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -17,14 +20,6 @@ class HomeScreen extends StatelessWidget {
     final Color textPri = isDark
         ? AppColors.textPrimaryDark
         : AppColors.textPrimaryLight;
-    final Color textSec = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
-    final Color cardBg = isDark ? AppColors.cardDark : Colors.white;
-    final Color inputBg = isDark ? AppColors.cardDark : Colors.white;
-    final Color divider = isDark
-        ? AppColors.dividerDark
-        : AppColors.dividerLight;
 
     // ui starts
     return Container(
@@ -128,99 +123,107 @@ class HomeScreen extends StatelessWidget {
                     //   ),
                     // ),
 
-                    // place of  the day
+                    // place of  the day=============================================
+                    //const SizedBox(height: 20),
+
+                    //                     Container(
+                    //                       height: 220,
+                    //                       width: double.infinity,
+                    //                       decoration: BoxDecoration(
+                    //                         borderRadius: BorderRadius.circular(20),
+                    //                         image: const DecorationImage(
+                    //                           image: AssetImage("assets/images/abbey_falls.jpg"),
+                    //                           //// or AssetImage
+                    //                           fit: BoxFit.cover,
+                    //                         ),
+                    //                       ),
+                    //                       child: Container(
+                    //                         // dark gradient overlay so text is readable
+                    //                         decoration: BoxDecoration(
+                    //                           borderRadius: BorderRadius.circular(20),
+                    //                           gradient: LinearGradient(
+                    //                             begin: Alignment.topCenter,
+                    //                             end: Alignment.bottomCenter,
+                    //                             colors: [
+                    //                               Colors.black.withValues(alpha: 0.5),
+                    //                               Colors.black.withValues(alpha: 0.1),
+                    //                               Colors.black.withValues(alpha: 0.6),
+                    //                             ],
+                    //                             stops: const [0.0, 0.4, 1.0],
+                    //                           ),
+                    //                         ),
+                    //                         padding: const EdgeInsets.all(20),
+                    //                         child: Column(
+                    //                           crossAxisAlignment: CrossAxisAlignment.start,
+                    //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //                           children: [
+                    //                             const Text(
+                    //                               'EXPLORE',
+                    //                               style: TextStyle(
+                    //                                 color: Colors.white,
+                    //                                 fontSize: 12,
+                    //                                 fontWeight: FontWeight.w600,
+                    //                                 letterSpacing: 1.5,
+                    //                               ),
+                    //                             ),
+                    //                             Column(
+                    //                               crossAxisAlignment: CrossAxisAlignment.start,
+                    //                               children: [
+                    //                                 const Text(
+                    //                                   'Abbey Falls',
+                    //                                   style: TextStyle(
+                    //                                     color: Colors.white,
+                    //                                     fontSize: 26,
+                    //                                     fontWeight: FontWeight.bold,
+                    //                                   ),
+                    //                                 ),
+                    //                                 const SizedBox(height: 6),
+                    //                                 const Text(
+                    //                                   'Beautiful waterfall surrounded\nby lush green nature.',
+                    //                                   style: TextStyle(
+                    //                                     color: Colors.white,
+                    //                                     fontSize: 14,
+                    //                                     height: 1.3,
+                    //                                   ),
+                    //                                 ),
+                    //                                 const SizedBox(height: 14),
+                    //                                 ElevatedButton(
+                    //                                   onPressed: () {},
+                    //                                   style: ElevatedButton.styleFrom(
+                    //                                     backgroundColor:
+                    //                                         AppColors.primary, // dark green
+                    //                                     foregroundColor: Colors.white,
+                    //                                     padding: const EdgeInsets.symmetric(
+                    //                                       horizontal: 18,
+                    //                                       vertical: 10,
+                    //                                     ),
+                    //                                     shape: RoundedRectangleBorder(
+                    //                                       borderRadius: BorderRadius.circular(30),
+                    //                                     ),
+                    //                                   ),
+                    //                                   child: const Row(
+                    //                                     mainAxisSize: MainAxisSize.min,
+                    //                                     children: [
+                    //                                       Text('Explore Now'),
+                    //                                       SizedBox(width: 6),
+                    //                                       Icon(Icons.arrow_forward, size: 16),
+                    //                                     ],
+                    //                                   ),
+                    //                                 ),
+                    //                               ],
+                    //                             ),
+                    //                           ],
+                    //                         ),
+                    //                       ),
+                    //                     ),
+                    // //
+
+                    // place of  the day=============================================
                     const SizedBox(height: 20),
 
-                    Container(
-                      height: 220,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        image: const DecorationImage(
-                          image: AssetImage("assets/images/abbey_falls.jpg"),
-                          //// or AssetImage
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: Container(
-                        // dark gradient overlay so text is readable
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.5),
-                              Colors.black.withOpacity(0.1),
-                              Colors.black.withOpacity(0.6),
-                            ],
-                            stops: const [0.0, 0.4, 1.0],
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'EXPLORE',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Abbey Falls',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                const Text(
-                                  'Beautiful waterfall surrounded\nby lush green nature.',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    height: 1.3,
-                                  ),
-                                ),
-                                const SizedBox(height: 14),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        AppColors.primary, // dark green
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 18,
-                                      vertical: 10,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('Explore Now'),
-                                      SizedBox(width: 6),
-                                      Icon(Icons.arrow_forward, size: 16),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    const PlaceOfTheDay(),
+
+                    // ==========END of  place of  the day=============================================
                     const SizedBox(height: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,26 +311,73 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 16),
+                        // hiden gems list
+                        SizedBox(
+                          height: 180,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: destinations.length,
+                            itemBuilder: (context, index) {
+                              return _DestinationItem(
+                                imageUrl: destinations[index].imageUrl,
+                                label: destinations[index].label,
+                              );
+                            },
+                          ),
+                        ),
 
                         // Horizontal scrollable hidden gem list
                       ],
                     ),
 
-                    // hiden gems list
-                    SizedBox(
-                      height: 180,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: destinations.length,
-                        itemBuilder: (context, index) {
-                          return _DestinationItem(
-                            imageUrl: destinations[index].imageUrl,
-                            label: destinations[index].label,
-                          );
-                        },
-                      ),
-                    ),
+                    // famous towns ============================================================
+                    const SizedBox(height: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Famous Towns',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => TownsScreen(),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Text(
+                                'View all',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
 
+                        // List of famous towns (horizontal scrollable) — just the list, no sliver wrapper
+                        const TownsHomeSection(),
+                      ],
+                    ),
+                    //  ============================================================
+                    const SizedBox(height: 16),
                     // banner ad test
                     const BannerAdWidget(),
                   ],

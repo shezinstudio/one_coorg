@@ -1,6 +1,6 @@
 class AdConfig {
   // Use test IDs during development, swap before release
-  static const bool isTest = false;
+  static const bool isTest = true;
 
   static String get bannerAdUnitId {
     if (isTest) {

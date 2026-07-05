@@ -92,124 +92,141 @@ class _TownsScreenState extends State<TownsScreen> {
         ? AppColors.textSecondaryDark
         : AppColors.textSecondaryLight;
 
-    return Container(
-      color: bg,
-      child: SafeArea(
-        child: FutureBuilder<List<Town>>(
-          future: _townsFuture,
-          builder: (context, snapshot) {
-            return CustomScrollView(
-              slivers: [
-                // ── Header ──────────────────────────────
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Famous Towns",
-                          style: TextStyle(
-                            fontSize: 34,
-                            fontWeight: FontWeight.w800,
-                            color: textPri,
-                            letterSpacing: -1,
-                            height: 1.1,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "Explore Coorg's iconic towns & villages",
-                          style: TextStyle(fontSize: 14, color: textSec),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // ── Loading ──────────────────────────────
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  SliverFillRemaining(
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                        strokeWidth: 2.5,
-                      ),
-                    ),
-                  )
-                // ── Error ────────────────────────────────
-                else if (snapshot.hasError)
-                  SliverFillRemaining(
-                    child: Center(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Famous Towns",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: textPri,
+            letterSpacing: -0.5,
+          ),
+        ),
+        centerTitle: false,
+        backgroundColor: bg,
+        elevation: 0,
+        iconTheme: IconThemeData(color: textPri),
+      ),
+      body: Container(
+        color: bg,
+        child: SafeArea(
+          child: FutureBuilder<List<Town>>(
+            future: _townsFuture,
+            builder: (context, snapshot) {
+              return CustomScrollView(
+                slivers: [
+                  // ── Header ──────────────────────────────
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.wifi_off_rounded,
-                            size: 48,
-                            color: textSec,
-                          ),
-                          const SizedBox(height: 12),
+                          // Text(
+                          //   "Famous Towns",
+                          //   style: TextStyle(
+                          //     fontSize: 34,
+                          //     fontWeight: FontWeight.w800,
+                          //     color: textPri,
+                          //     letterSpacing: -1,
+                          //     height: 1.1,
+                          //   ),
+                          // ),
+                          // const SizedBox(height: 4),
                           Text(
-                            "Couldn't load towns",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: textPri,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            "Check your connection and try again",
-                            style: TextStyle(fontSize: 13, color: textSec),
-                          ),
-                          const SizedBox(height: 20),
-                          TextButton.icon(
-                            onPressed: () => setState(
-                              () => _townsFuture = _repo.fetchTowns(),
-                            ),
-                            icon: Icon(
-                              Icons.refresh_rounded,
-                              color: AppColors.primary,
-                            ),
-                            label: Text(
-                              "Retry",
-                              style: TextStyle(color: AppColors.primary),
-                            ),
+                            "Explore Coorg's iconic towns & villages",
+                            style: TextStyle(fontSize: 14, color: textSec),
                           ),
                         ],
                       ),
                     ),
-                  )
-                // ── Empty ────────────────────────────────
-                else if (!snapshot.hasData || snapshot.data!.isEmpty)
-                  SliverFillRemaining(
-                    child: Center(
-                      child: Text(
-                        "No towns found",
-                        style: TextStyle(fontSize: 15, color: textSec),
-                      ),
-                    ),
-                  )
-                // ── List ─────────────────────────────────
-                else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => _TownCard(
-                          town: snapshot.data![index],
-                          isDark: isDark,
-                          textPri: textPri,
-                          textSec: textSec,
-                        ),
-                        childCount: snapshot.data!.length,
-                      ),
-                    ),
                   ),
-              ],
-            );
-          },
+
+                  // ── Loading ──────────────────────────────
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    SliverFillRemaining(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                          strokeWidth: 2.5,
+                        ),
+                      ),
+                    )
+                  // ── Error ────────────────────────────────
+                  else if (snapshot.hasError)
+                    SliverFillRemaining(
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.wifi_off_rounded,
+                              size: 48,
+                              color: textSec,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              "Couldn't load towns",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: textPri,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              "Check your connection and try again",
+                              style: TextStyle(fontSize: 13, color: textSec),
+                            ),
+                            const SizedBox(height: 20),
+                            TextButton.icon(
+                              onPressed: () => setState(
+                                () => _townsFuture = _repo.fetchTowns(),
+                              ),
+                              icon: Icon(
+                                Icons.refresh_rounded,
+                                color: AppColors.primary,
+                              ),
+                              label: Text(
+                                "Retry",
+                                style: TextStyle(color: AppColors.primary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  // ── Empty ────────────────────────────────
+                  else if (!snapshot.hasData || snapshot.data!.isEmpty)
+                    SliverFillRemaining(
+                      child: Center(
+                        child: Text(
+                          "No towns found",
+                          style: TextStyle(fontSize: 15, color: textSec),
+                        ),
+                      ),
+                    )
+                  // ── List ─────────────────────────────────
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => _TownCard(
+                            town: snapshot.data![index],
+                            isDark: isDark,
+                            textPri: textPri,
+                            textSec: textSec,
+                          ),
+                          childCount: snapshot.data!.length,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

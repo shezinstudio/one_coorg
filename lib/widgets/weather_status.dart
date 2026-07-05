@@ -9,16 +9,7 @@ class WeatherStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     // color codes for the current page as per the theme (dark/light)
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final Color bg = isDark
-        ? AppColors.backgroundDark
-        : AppColors.backgroundLight;
-    final Color textPri = isDark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
-    final Color textSec = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
-    final Color cardBg = isDark ? AppColors.cardDark : Colors.white;
+
     final Color inputBg = isDark ? AppColors.cardDark : Colors.white;
     final Color divider = isDark
         ? AppColors.dividerDark

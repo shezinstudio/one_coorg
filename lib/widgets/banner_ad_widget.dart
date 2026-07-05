@@ -18,7 +18,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
     super.initState();
     BannerAd(
       adUnitId: AdConfig.bannerAdUnitId,
-      size: AdSize.banner,
+      size: AdSize.fullBanner,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) => setState(() {
@@ -40,7 +40,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   Widget build(BuildContext context) {
     if (!_isLoaded || _bannerAd == null) return const SizedBox.shrink();
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 10),
       alignment: Alignment.center,
       width: _bannerAd!.size.width.toDouble(),
       height: _bannerAd!.size.height.toDouble(),

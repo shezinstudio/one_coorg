@@ -3,7 +3,6 @@ import 'package:one_coorg/screens/home/place_detail_screen.dart';
 import 'package:one_coorg/services/place_service.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:one_coorg/widgets/banner_ad_widget.dart';
 
 const int _adEvery = 5; // show a banner after every 5 cards
@@ -26,34 +25,6 @@ const Map<String, Color> _categoryAccents = {
   "Reservoirs": AppColors.primaryLight,
 };
 
-// Quick filter chips — combined with the category row above as an AND filter
-const List<String> _quickFilters = [
-  "All",
-  "Nearby",
-  "Free",
-  "Family",
-  "Adventure",
-];
-
-const Map<String, IconData> _quickFilterIcons = {
-  "All": Icons.apps_rounded,
-  "Nearby": Icons.near_me_rounded,
-  "Free": Icons.money_off_rounded,
-  "Family": Icons.family_restroom_rounded,
-  "Adventure": Icons.terrain_rounded,
-};
-
-const Map<String, String> _quickFilterSubtitles = {
-  "All": "Show every place",
-  "Nearby": "Within 20 km of you",
-  "Free": "No entry fee",
-  "Family": "Good for kids",
-  "Adventure": "Treks, camping & more",
-};
-
-// How far counts as "nearby", in kilometres
-const double _nearbyRadiusKm = 20.0;
-
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
 
@@ -63,7 +34,6 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   String _selectedCategory = "All";
-  String _selectedQuickFilter = "All";
   String _searchQuery = "";
 
   // Holds the one active future — recreated only when category changes
@@ -73,11 +43,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
   // this session, switching back to it (or revisiting this screen while it
   // stays mounted) is instant — no network round trip.
   final Map<String, List<TouristPlace>> _cache = {};
-
-  // User's live position, fetched lazily the first time "Nearby" is tapped
-  Position? _userPosition;
-  bool _locatingUser = false;
-  String? _locationError;
 
   @override
   void initState() {
@@ -115,322 +80,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
     });
   }
 
-  Future<void> _openFilterSheet() async {
-    String tempSelected = _selectedQuickFilter;
-    bool sheetLocating = false;
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) {
-        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
-        final sheetBg = isDark ? AppColors.cardDark : Colors.white;
-        final textPri = isDark
-            ? AppColors.textPrimaryDark
-            : AppColors.textPrimaryLight;
-        final textSec = isDark
-            ? AppColors.textSecondaryDark
-            : AppColors.textSecondaryLight;
-        final divider = isDark ? AppColors.dividerDark : AppColors.dividerLight;
-
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            Future<void> selectFilter(String filter) async {
-              if (filter == "Nearby" && _userPosition == null) {
-                setSheetState(() => sheetLocating = true);
-                await _getUserLocation();
-                setSheetState(() => sheetLocating = false);
-                if (_userPosition == null) return; // permission denied/failed
-              }
-              setSheetState(() => tempSelected = filter);
-            }
-
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: sheetBg,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(28),
-                  ),
-                ),
-                child: SafeArea(
-                  top: false,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(height: 10),
-                      // Drag handle
-                      Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: divider,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-
-                      // Title row
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Filter Places",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: textPri,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                            const Spacer(),
-                            if (tempSelected != "All")
-                              GestureDetector(
-                                onTap: () =>
-                                    setSheetState(() => tempSelected = "All"),
-                                child: Text(
-                                  "Reset",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: isDark
-                                        ? AppColors.primaryBright
-                                        : AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Filter options
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 4,
-                        ),
-                        child: Column(
-                          children: _quickFilters.map((filter) {
-                            final isActive = filter == tempSelected;
-                            final isLoadingThis =
-                                filter == "Nearby" && sheetLocating;
-                            final accent = isDark
-                                ? AppColors.primaryBright
-                                : AppColors.primary;
-
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: GestureDetector(
-                                onTap: isLoadingThis
-                                    ? null
-                                    : () => selectFilter(filter),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isActive
-                                        ? accent.withValues(alpha: 0.12)
-                                        : (isDark
-                                              ? AppColors.backgroundDark
-                                              : AppColors.backgroundLight),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: isActive ? accent : divider,
-                                      width: isActive ? 1.4 : 1,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: isActive
-                                              ? accent
-                                              : accent.withValues(alpha: 0.1),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: isLoadingThis
-                                            ? SizedBox(
-                                                width: 16,
-                                                height: 16,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                      color: isActive
-                                                          ? Colors.white
-                                                          : accent,
-                                                    ),
-                                              )
-                                            : Icon(
-                                                _quickFilterIcons[filter],
-                                                size: 18,
-                                                color: isActive
-                                                    ? Colors.white
-                                                    : accent,
-                                              ),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              filter,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w700,
-                                                color: textPri,
-                                              ),
-                                            ),
-                                            Text(
-                                              _quickFilterSubtitles[filter] ??
-                                                  '',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: textSec,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      AnimatedSwitcher(
-                                        duration: const Duration(
-                                          milliseconds: 150,
-                                        ),
-                                        child: isActive
-                                            ? Icon(
-                                                Icons.check_circle_rounded,
-                                                key: const ValueKey('active'),
-                                                color: accent,
-                                                size: 22,
-                                              )
-                                            : Icon(
-                                                Icons.circle_outlined,
-                                                key: const ValueKey('inactive'),
-                                                color: divider,
-                                                size: 22,
-                                              ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // Apply button
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              elevation: 0,
-                            ),
-                            onPressed: () {
-                              setState(
-                                () => _selectedQuickFilter = tempSelected,
-                              );
-                              Navigator.pop(sheetContext);
-                            },
-                            child: const Text(
-                              "Apply Filter",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> _getUserLocation() async {
-    setState(() {
-      _locatingUser = true;
-      _locationError = null;
-    });
-
-    try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw 'Location services are turned off';
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw 'Location permission denied';
-        }
-      }
-      if (permission == LocationPermission.deniedForever) {
-        throw 'Location permission permanently denied. Enable it in Settings.';
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.medium,
-        ),
-      );
-
-      if (!mounted) return;
-      setState(() {
-        _userPosition = position;
-        _locatingUser = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _locationError = e.toString();
-        _locatingUser = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_locationError!)));
-    }
-  }
-
-  double _distanceKm(TouristPlace place) {
-    if (_userPosition == null) return double.infinity;
-    return Geolocator.distanceBetween(
-          _userPosition!.latitude,
-          _userPosition!.longitude,
-          place.lat,
-          place.lng,
-        ) /
-        1000;
-  }
-
   // Client-side search filter applied on top of fetched list
   List<TouristPlace> _applySearch(List<TouristPlace> places) {
     if (_searchQuery.isEmpty) return places;
@@ -442,31 +91,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
               p.location.toLowerCase().contains(q),
         )
         .toList();
-  }
-
-  // Quick-filter logic — combined with category (already applied via
-  // _placesFuture) and search as an AND filter
-  List<TouristPlace> _applyQuickFilter(List<TouristPlace> places) {
-    switch (_selectedQuickFilter) {
-      case "Free":
-        return places
-            .where((p) => p.entryFee.toLowerCase().contains('free'))
-            .toList();
-      case "Family":
-        return places.where((p) => p.isFamilyFriendly).toList();
-      case "Adventure":
-        return places.where((p) => p.isAdventure).toList();
-      case "Nearby":
-        if (_userPosition == null) return places;
-        final withinRadius = places
-            .where((p) => _distanceKm(p) <= _nearbyRadiusKm)
-            .toList();
-        withinRadius.sort((a, b) => _distanceKm(a).compareTo(_distanceKm(b)));
-        return withinRadius;
-      case "All":
-      default:
-        return places;
-    }
   }
 
   @override
@@ -492,81 +116,83 @@ class _ExploreScreenState extends State<ExploreScreen> {
       child: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // ── App bar ───────────────────────────────────────
+            // ── Header ──────────────────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        // Explore icon (replaces the drawer/hamburger icon)
-                        Icon(
-                          Icons.explore_rounded,
-                          size: 26,
-                          color: isDark
-                              ? AppColors.primaryBright
-                              : AppColors.primary,
+                    // Location chip
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(
+                          alpha: isDark ? 0.25 : 0.10,
                         ),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              "Explore",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                color: textPri,
-                                letterSpacing: -0.3,
-                              ),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.primaryLight.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.location_on_rounded,
+                            size: 12,
+                            color: AppColors.primaryLight,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Kodagu, Karnataka",
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isDark
+                                  ? AppColors.primaryBright
+                                  : AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.3,
                             ),
                           ),
-                        ),
-                        // Filter action — opens the filter bottom sheet
-                        GestureDetector(
-                          onTap: _openFilterSheet,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: _selectedQuickFilter != "All"
-                                  ? AppColors.primary.withValues(alpha: 0.12)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Icon(
-                                  Icons.tune_rounded,
-                                  size: 22,
-                                  color: isDark
-                                      ? AppColors.primaryBright
-                                      : AppColors.primary,
-                                ),
-                                if (_selectedQuickFilter != "All")
-                                  Positioned(
-                                    top: -2,
-                                    right: -2,
-                                    child: Container(
-                                      width: 8,
-                                      height: 8,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primary,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: bg,
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 14),
+
+                    // Title
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Discover\n",
+                            style: TextStyle(
+                              fontSize: 34,
+                              fontWeight: FontWeight.w800,
+                              color: textPri,
+                              height: 1.1,
+                              letterSpacing: -1,
+                            ),
+                          ),
+                          TextSpan(
+                            text: "Coorg's Wonders",
+                            style: TextStyle(
+                              fontSize: 34,
+                              fontWeight: FontWeight.w800,
+                              color: isDark
+                                  ? AppColors.primaryBright
+                                  : AppColors.primary,
+                              height: 1.1,
+                              letterSpacing: -1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
 
                     // Search bar
                     Container(
@@ -619,8 +245,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
               ),
             ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 4)),
 
             // ── Category chips ───────────────────────────────
             SliverToBoxAdapter(
@@ -763,10 +387,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   );
                 }
 
-                // Combined AND filter: category (already applied via future)
-                // → search → quick filter (Nearby/Free/Family/Adventure)
-                final searched = _applySearch(snapshot.data ?? []);
-                final filtered = _applyQuickFilter(searched);
+                final filtered = _applySearch(snapshot.data ?? []);
 
                 // ── Empty ────────────────────────────────
                 if (filtered.isEmpty) {
@@ -796,6 +417,22 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 }
 
                 // ── List (lazy) ───────────────────────────
+                // return SliverPadding(
+                //   padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                //   sliver: SliverList(
+                //     delegate: SliverChildBuilderDelegate(
+                //       (context, index) => _PlaceCard(
+                //         place: filtered[index],
+                //         cardBg: cardBg,
+                //         textPri: textPri,
+                //         textSec: textSec,
+                //         isDark: isDark,
+                //       ),
+                //       childCount: filtered.length,
+                //     ),
+                //   ),
+                // );
+
                 return SliverPadding(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
                   sliver: SliverList(

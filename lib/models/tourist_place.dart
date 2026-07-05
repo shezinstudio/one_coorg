@@ -43,6 +43,10 @@ class TouristPlace {
   final double lat;
   final double lng;
 
+  // NEW — quick-filter fields (add matching boolean columns in Supabase)
+  final bool isFamilyFriendly; // Supabase column: is_family_friendly
+  final bool isAdventure; // Supabase column: is_adventure
+
   const TouristPlace({
     required this.id,
     required this.name,
@@ -63,6 +67,8 @@ class TouristPlace {
     required this.mapLabel,
     required this.lat,
     required this.lng,
+    this.isFamilyFriendly = false,
+    this.isAdventure = false,
   });
 
   // Deserialise a Supabase row into a TouristPlace
@@ -92,6 +98,8 @@ class TouristPlace {
       mapLabel: map['map_label']?.toString() ?? '',
       lat: (map['lat'] as num?)?.toDouble() ?? 12.4244,
       lng: (map['lng'] as num?)?.toDouble() ?? 75.7382,
+      isFamilyFriendly: map['is_family_friendly'] as bool? ?? false,
+      isAdventure: map['is_adventure'] as bool? ?? false,
     );
   }
 
