@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:one_coorg/models/tourist_place.dart';
+import 'package:one_coorg/screens/home/explore_screen.dart';
 import 'package:one_coorg/screens/home/hidden_gem_screen.dart';
+import 'package:one_coorg/screens/home/place_detail_screen.dart';
 import 'package:one_coorg/screens/home/towns_screen.dart';
 import 'package:one_coorg/services/place_service.dart';
 import 'package:one_coorg/theme/app_colors.dart';
@@ -256,21 +258,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: textPri,
                               ),
                             ),
-                            // TextButton(
-                            //   onPressed: () {},
-                            //   style: TextButton.styleFrom(
-                            //     padding: EdgeInsets.zero,
-                            //     minimumSize: Size.zero,
-                            //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            //   ),
-                            //   child: const Text(
-                            //     'View all',
-                            //     style: TextStyle(
-                            //       color: Colors.green,
-                            //       fontWeight: FontWeight.w600,
-                            //     ),
-                            //   ),
-                            // ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -281,14 +268,190 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
-                              CategoryItem(emoji: '🌊', label: 'Waterfalls'),
-                              CategoryItem(emoji: '🔥', label: 'Viewpoints'),
-                              CategoryItem(emoji: '🐐', label: 'Wildlife'),
-                              CategoryItem(emoji: '🏯', label: 'Temples'),
-                              CategoryItem(emoji: '🌱', label: 'Coffee'),
+                              CategoryItem(
+                                icon: Icons.water,
+                                label: 'Waterfalls',
+                                iconColor: Colors.blueAccent,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const ExploreScreen(
+                                      initialCategory: 'Waterfalls',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              CategoryItem(
+                                icon: Icons.temple_hindu,
+                                label: 'Temples',
+                                iconColor: Colors.purpleAccent,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const ExploreScreen(
+                                      initialCategory: 'Temples',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              CategoryItem(
+                                icon: Icons.landscape,
+                                label: 'Viewpoints',
+                                iconColor: Colors.greenAccent,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const ExploreScreen(
+                                      initialCategory: 'Viewpoints',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              CategoryItem(
+                                icon: Icons.account_balance,
+                                label: 'Heritage',
+                                iconColor: Colors.orangeAccent,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const ExploreScreen(
+                                      initialCategory: 'Heritage',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              CategoryItem(
+                                icon: Icons.waves,
+                                label: 'Reservoirs',
+                                iconColor: Colors.cyanAccent,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const ExploreScreen(
+                                      initialCategory: 'Reservoirs',
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
+                        // SizedBox(
+                        //   height: 90,
+                        //   child: ListView(
+                        //     scrollDirection: Axis.horizontal,
+                        //     children: [
+                        //       GestureDetector(
+                        //         onTap: () => Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (_) => const ExploreScreen(
+                        //               initialCategory: 'Waterfalls',
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         child: CategoryItem(
+                        //           icon: Icons.water,
+                        //           label: 'Waterfalls',
+                        //           iconColor: Colors.blueAccent,
+                        //         ),
+                        //       ),
+                        //       GestureDetector(
+                        //         onTap: () => Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (_) => const ExploreScreen(
+                        //               initialCategory: 'Temples',
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         child: CategoryItem(
+                        //           icon: Icons.temple_hindu,
+                        //           label: 'Temples',
+                        //           iconColor: Colors.purpleAccent,
+                        //         ),
+                        //       ),
+                        //       GestureDetector(
+                        //         onTap: () => Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (_) => const ExploreScreen(
+                        //               initialCategory: 'Viewpoints',
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         child: CategoryItem(
+                        //           icon: Icons.landscape,
+                        //           label: 'Viewpoints',
+                        //           iconColor: Colors.greenAccent,
+                        //         ),
+                        //       ),
+                        //       GestureDetector(
+                        //         onTap: () => Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (_) => const ExploreScreen(
+                        //               initialCategory: 'Heritage',
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         child: CategoryItem(
+                        //           icon: Icons.account_balance,
+                        //           label: 'Heritage',
+                        //           iconColor: Colors.orangeAccent,
+                        //         ),
+                        //       ),
+                        //       GestureDetector(
+                        //         onTap: () => Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: (_) => const ExploreScreen(
+                        //               initialCategory: 'Reservoirs',
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         child: CategoryItem(
+                        //           icon: Icons.waves,
+                        //           label: 'Reservoirs',
+                        //           iconColor: Colors.cyanAccent,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   height: 90,
+                        //   child: ListView(
+                        //     scrollDirection: Axis.horizontal,
+                        //     children: [
+                        //       CategoryItem(
+                        //         icon: Icons.water,
+                        //         label: 'Waterfalls',
+                        //         iconColor: Colors.blueAccent,
+                        //       ),
+                        //       CategoryItem(
+                        //         icon: Icons.temple_hindu,
+                        //         label: 'Temples',
+                        //         iconColor: Colors.purpleAccent,
+                        //       ),
+                        //       CategoryItem(
+                        //         icon: Icons.landscape,
+                        //         label: 'Viewpoints',
+                        //         iconColor: Colors.greenAccent,
+                        //       ),
+                        //       CategoryItem(
+                        //         icon: Icons.account_balance,
+                        //         label: 'Heritage',
+                        //         iconColor: Colors.orangeAccent,
+                        //       ),
+                        //       CategoryItem(
+                        //         icon: Icons.waves,
+                        //         label: 'Reservoirs',
+                        //         iconColor: Colors.cyanAccent,
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
 
@@ -363,12 +526,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: places.length,
                                 itemBuilder: (context, index) {
-                                  return _DestinationItem(
-                                    imageUrl: places[index].imageUrl,
-                                    label: places[index].name,
+                                  final place = places[index];
+                                  return GestureDetector(
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            PlaceDetailScreen(place: place),
+                                      ),
+                                    ),
+                                    child: _DestinationItem(
+                                      imageUrl: place.imageUrl,
+                                      label: place.name,
+                                    ),
                                   );
                                 },
                               );
+                              // return ListView.builder(
+                              //   scrollDirection: Axis.horizontal,
+                              //   itemCount: places.length,
+                              //   itemBuilder: (context, index) {
+                              //     return _DestinationItem(
+                              //       imageUrl: places[index].imageUrl,
+                              //       label: places[index].name,
+                              //     );
+                              //   },
+                              // );
                             },
                           ),
                         ),

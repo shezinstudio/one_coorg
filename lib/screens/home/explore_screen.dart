@@ -55,14 +55,19 @@ const Map<String, String> _quickFilterSubtitles = {
 const double _nearbyRadiusKm = 20.0;
 
 class ExploreScreen extends StatefulWidget {
-  const ExploreScreen({super.key});
+  // Lets callers (e.g. tapping a category on the Home screen) open Explore
+  // pre-filtered to a specific category instead of always defaulting to
+  // "All". Must match one of the labels in _categories, e.g. "Waterfalls".
+  final String? initialCategory;
+
+  const ExploreScreen({super.key, this.initialCategory});
 
   @override
   State<ExploreScreen> createState() => _ExploreScreenState();
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  String _selectedCategory = "All";
+  late String _selectedCategory;
   String _selectedQuickFilter = "All";
   String _searchQuery = "";
 
@@ -82,6 +87,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
   @override
   void initState() {
     super.initState();
+    final validLabels = _categories.map((c) => c["label"] as String).toSet();
+    _selectedCategory =
+        (widget.initialCategory != null &&
+            validLabels.contains(widget.initialCategory))
+        ? widget.initialCategory!
+        : "All";
     _placesFuture = _loadPlaces(_selectedCategory);
   }
 
@@ -487,346 +498,349 @@ class _ExploreScreenState extends State<ExploreScreen> {
         ? AppColors.dividerDark
         : AppColors.dividerLight;
 
-    return Container(
-      color: bg,
-      child: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // ── App bar ───────────────────────────────────────
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        // Explore icon (replaces the drawer/hamburger icon)
-                        Icon(
-                          Icons.explore_rounded,
-                          size: 26,
-                          color: isDark
-                              ? AppColors.primaryBright
-                              : AppColors.primary,
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              "Explore",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                color: textPri,
-                                letterSpacing: -0.3,
+    return Scaffold(
+      body: Container(
+        color: bg,
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              // ── App bar ───────────────────────────────────────
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          // Explore icon (replaces the drawer/hamburger icon)
+                          Icon(
+                            Icons.explore_rounded,
+                            size: 26,
+                            color: isDark
+                                ? AppColors.primaryBright
+                                : AppColors.primary,
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                "Explore",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  color: textPri,
+                                  letterSpacing: -0.3,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        // Filter action — opens the filter bottom sheet
-                        GestureDetector(
-                          onTap: _openFilterSheet,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: _selectedQuickFilter != "All"
-                                  ? AppColors.primary.withValues(alpha: 0.12)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Icon(
-                                  Icons.tune_rounded,
-                                  size: 22,
-                                  color: isDark
-                                      ? AppColors.primaryBright
-                                      : AppColors.primary,
-                                ),
-                                if (_selectedQuickFilter != "All")
-                                  Positioned(
-                                    top: -2,
-                                    right: -2,
-                                    child: Container(
-                                      width: 8,
-                                      height: 8,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primary,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: bg,
-                                          width: 1.5,
+                          // Filter action — opens the filter bottom sheet
+                          GestureDetector(
+                            onTap: _openFilterSheet,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: _selectedQuickFilter != "All"
+                                    ? AppColors.primary.withValues(alpha: 0.12)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Icon(
+                                    Icons.tune_rounded,
+                                    size: 22,
+                                    color: isDark
+                                        ? AppColors.primaryBright
+                                        : AppColors.primary,
+                                  ),
+                                  if (_selectedQuickFilter != "All")
+                                    Positioned(
+                                      top: -2,
+                                      right: -2,
+                                      child: Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primary,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: bg,
+                                            width: 1.5,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-
-                    // Search bar
-                    Container(
-                      decoration: BoxDecoration(
-                        color: inputBg,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: divider),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.06),
-                            blurRadius: 12,
-                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
-                      child: TextField(
-                        onChanged: (v) => setState(() => _searchQuery = v),
-                        style: TextStyle(fontSize: 14, color: textPri),
-                        decoration: InputDecoration(
-                          hintText: "Search places, landmarks...",
-                          hintStyle: TextStyle(
-                            color: textSec.withValues(alpha: 0.6),
-                            fontSize: 14,
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search_rounded,
-                            color: AppColors.primaryLight,
-                            size: 20,
-                          ),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? GestureDetector(
-                                  onTap: () =>
-                                      setState(() => _searchQuery = ""),
-                                  child: Icon(
-                                    Icons.close_rounded,
-                                    size: 18,
-                                    color: textSec,
-                                  ),
-                                )
-                              : null,
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
+                      const SizedBox(height: 18),
+
+                      // Search bar
+                      Container(
+                        decoration: BoxDecoration(
+                          color: inputBg,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: divider),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.06),
+                              blurRadius: 12,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          onChanged: (v) => setState(() => _searchQuery = v),
+                          style: TextStyle(fontSize: 14, color: textPri),
+                          decoration: InputDecoration(
+                            hintText: "Search places, landmarks...",
+                            hintStyle: TextStyle(
+                              color: textSec.withValues(alpha: 0.6),
+                              fontSize: 14,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.search_rounded,
+                              color: AppColors.primaryLight,
+                              size: 20,
+                            ),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? GestureDetector(
+                                    onTap: () =>
+                                        setState(() => _searchQuery = ""),
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      size: 18,
+                                      color: textSec,
+                                    ),
+                                  )
+                                : null,
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 4)),
+              const SliverToBoxAdapter(child: SizedBox(height: 4)),
 
-            // ── Category chips ───────────────────────────────
-            SliverToBoxAdapter(
-              child: SizedBox(
-                height: 44,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: _categories.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
-                  itemBuilder: (context, i) {
-                    final cat = _categories[i];
-                    final label = cat["label"] as String;
-                    final isActive = label == _selectedCategory;
-                    final accent = _categoryAccents[label] ?? AppColors.primary;
-                    return GestureDetector(
-                      onTap: () => _onCategorySelected(label),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isActive
-                              ? accent
-                              : isDark
-                              ? AppColors.cardDark
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(22),
-                          border: Border.all(
-                            color: isActive ? accent : divider,
+              // ── Category chips ───────────────────────────────
+              SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 44,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: _categories.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (context, i) {
+                      final cat = _categories[i];
+                      final label = cat["label"] as String;
+                      final isActive = label == _selectedCategory;
+                      final accent =
+                          _categoryAccents[label] ?? AppColors.primary;
+                      return GestureDetector(
+                        onTap: () => _onCategorySelected(label),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
                           ),
-                          boxShadow: isActive
-                              ? [
-                                  BoxShadow(
-                                    color: accent.withValues(alpha: 0.35),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ]
-                              : [],
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? accent
+                                : isDark
+                                ? AppColors.cardDark
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(
+                              color: isActive ? accent : divider,
+                            ),
+                            boxShadow: isActive
+                                ? [
+                                    BoxShadow(
+                                      color: accent.withValues(alpha: 0.35),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ]
+                                : [],
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                cat["icon"] as IconData,
+                                size: 14,
+                                color: isActive ? Colors.white : textSec,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                label,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: isActive ? Colors.white : textSec,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Row(
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+
+              // ── Places list via FutureBuilder ────────────────
+              // NOTE: this FutureBuilder is now a direct sliver (not wrapped in
+              // a single SliverToBoxAdapter). Its loading/error/empty states
+              // return SliverToBoxAdapter, but the data state returns a real
+              // SliverList — so cards are built lazily as they scroll into
+              // view instead of all at once.
+              FutureBuilder<List<TouristPlace>>(
+                future: _placesFuture,
+                builder: (context, snapshot) {
+                  // ── Loading ──────────────────────────────
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 60),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: isDark
+                                ? AppColors.primaryBright
+                                : AppColors.primary,
+                            strokeWidth: 2.5,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  // ── Error ────────────────────────────────
+                  if (snapshot.hasError) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Column(
                           children: [
                             Icon(
-                              cat["icon"] as IconData,
-                              size: 14,
-                              color: isActive ? Colors.white : textSec,
+                              Icons.wifi_off_rounded,
+                              size: 40,
+                              color: textSec,
                             ),
-                            const SizedBox(width: 6),
+                            const SizedBox(height: 12),
                             Text(
-                              label,
+                              "Couldn't load places",
                               style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: isActive ? Colors.white : textSec,
+                                color: textSec,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () => setState(() {
+                                _placesFuture = _loadPlaces(
+                                  _selectedCategory,
+                                  forceRefresh: true,
+                                );
+                              }),
+                              child: Text(
+                                "Tap to retry",
+                                style: TextStyle(
+                                  color: isDark
+                                      ? AppColors.primaryBright
+                                      : AppColors.primary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
                     );
-                  },
-                ),
-              ),
-            ),
+                  }
 
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                  // Combined AND filter: category (already applied via future)
+                  // → search → quick filter (Nearby/Free/Family/Adventure)
+                  final searched = _applySearch(snapshot.data ?? []);
+                  final filtered = _applyQuickFilter(searched);
 
-            // ── Places list via FutureBuilder ────────────────
-            // NOTE: this FutureBuilder is now a direct sliver (not wrapped in
-            // a single SliverToBoxAdapter). Its loading/error/empty states
-            // return SliverToBoxAdapter, but the data state returns a real
-            // SliverList — so cards are built lazily as they scroll into
-            // view instead of all at once.
-            FutureBuilder<List<TouristPlace>>(
-              future: _placesFuture,
-              builder: (context, snapshot) {
-                // ── Loading ──────────────────────────────
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 60),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: isDark
-                              ? AppColors.primaryBright
-                              : AppColors.primary,
-                          strokeWidth: 2.5,
-                        ),
-                      ),
-                    ),
-                  );
-                }
-
-                // ── Error ────────────────────────────────
-                if (snapshot.hasError) {
-                  return SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(40),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.wifi_off_rounded,
-                            size: 40,
-                            color: textSec,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            "Couldn't load places",
-                            style: TextStyle(
+                  // ── Empty ────────────────────────────────
+                  if (filtered.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 60),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 40,
                               color: textSec,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: () => setState(() {
-                              _placesFuture = _loadPlaces(
-                                _selectedCategory,
-                                forceRefresh: true,
-                              );
-                            }),
-                            child: Text(
-                              "Tap to retry",
+                            const SizedBox(height: 12),
+                            Text(
+                              "No places found",
                               style: TextStyle(
-                                color: isDark
-                                    ? AppColors.primaryBright
-                                    : AppColors.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
+                                color: textSec,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  // ── List (lazy) ───────────────────────────
+                  return SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          // Every (_adEvery + 1) items, one slot is an ad
+                          final int cyclePos = index % (_adEvery + 1);
+                          if (cyclePos == _adEvery) {
+                            return const BannerAdWidget();
+                          }
+                          final int placeIndex =
+                              (index ~/ (_adEvery + 1)) * _adEvery + cyclePos;
+                          if (placeIndex >= filtered.length) return null;
+                          return _PlaceCard(
+                            place: filtered[placeIndex],
+                            cardBg: cardBg,
+                            textPri: textPri,
+                            textSec: textSec,
+                            isDark: isDark,
+                          );
+                        },
+                        // Total slots = full cycles + remainder + ad count
+                        childCount:
+                            filtered.length +
+                            (filtered.length / _adEvery).floor(),
                       ),
                     ),
                   );
-                }
-
-                // Combined AND filter: category (already applied via future)
-                // → search → quick filter (Nearby/Free/Family/Adventure)
-                final searched = _applySearch(snapshot.data ?? []);
-                final filtered = _applyQuickFilter(searched);
-
-                // ── Empty ────────────────────────────────
-                if (filtered.isEmpty) {
-                  return SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 60),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.search_off_rounded,
-                            size: 40,
-                            color: textSec,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            "No places found",
-                            style: TextStyle(
-                              color: textSec,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
-                // ── List (lazy) ───────────────────────────
-                return SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        // Every (_adEvery + 1) items, one slot is an ad
-                        final int cyclePos = index % (_adEvery + 1);
-                        if (cyclePos == _adEvery) {
-                          return const BannerAdWidget();
-                        }
-                        final int placeIndex =
-                            (index ~/ (_adEvery + 1)) * _adEvery + cyclePos;
-                        if (placeIndex >= filtered.length) return null;
-                        return _PlaceCard(
-                          place: filtered[placeIndex],
-                          cardBg: cardBg,
-                          textPri: textPri,
-                          textSec: textSec,
-                          isDark: isDark,
-                        );
-                      },
-                      // Total slots = full cycles + remainder + ad count
-                      childCount:
-                          filtered.length +
-                          (filtered.length / _adEvery).floor(),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

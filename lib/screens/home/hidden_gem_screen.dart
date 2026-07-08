@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:one_coorg/models/tourist_place.dart';
+import 'package:one_coorg/screens/home/place_detail_screen.dart';
 import 'package:one_coorg/services/place_service.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 
@@ -128,7 +129,7 @@ class _HiddenGemScreenState extends State<HiddenGemScreen> {
 
     return ListView.separated(
       itemCount: _places.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final place = _places[index];
         return _HiddenGemListItem(place: place, textColor: textPri);
@@ -149,9 +150,10 @@ class _HiddenGemListItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       onTap: () {
         // Navigate to your existing place detail screen here, e.g.:
-        // Navigator.push(context, MaterialPageRoute(
-        //   builder: (_) => PlaceDetailScreen(placeId: place.id),
-        // ));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => PlaceDetailScreen(place: place)),
+        );
       },
       child: Container(
         padding: const EdgeInsets.all(10),
@@ -168,7 +170,7 @@ class _HiddenGemListItem extends StatelessWidget {
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   width: 80,
                   height: 80,
                   color: Colors.grey.shade300,

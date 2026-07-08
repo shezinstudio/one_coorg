@@ -39,18 +39,42 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   // updated
 
   Future<void> _openDirections() async {
+    // final lat = widget.place.lat;
+    // final lng = widget.place.lng;
+    // final name = Uri.encodeComponent(widget.place.name);
+
+    // // Try Google Maps app first, fall back to browser
+    // final googleMapsApp = Uri.parse("google.navigation:q=$lat,$lng&mode=d");
+    // final googleMapsBrowser = Uri.parse(
+    //   "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination=$name&travelmode=driving",
+    // );
+
+    // if (await canLaunchUrl(googleMapsApp)) {
+    //   await launchUrl(googleMapsApp, mode: LaunchMode.externalApplication);
+    // } else if (await canLaunchUrl(googleMapsBrowser)) {
+    //   await launchUrl(googleMapsBrowser, mode: LaunchMode.externalApplication);
+    // } else {
+    //   // Final fallback — open in any available browser
+    //   await launchUrl(googleMapsBrowser, mode: LaunchMode.platformDefault);
+    // }
+
     final lat = widget.place.lat;
     final lng = widget.place.lng;
     final name = Uri.encodeComponent(widget.place.name);
 
-    // Try Google Maps app first, fall back to browser
-    final googleMapsApp = Uri.parse("google.navigation:q=$lat,$lng&mode=d");
+    // geo: is the standard Android scheme for "show this point on the map" —
+    // no route, no travel mode, just a pin. Most map apps (Google Maps included)
+    // register as a handler for it.
+    final geoUri = Uri.parse("geo:$lat,$lng?q=$lat,$lng($name)");
+
+    // Browser fallback: Maps' /search/ endpoint (as opposed to /dir/) drops a
+    // pin at the location instead of plotting a route to it.
     final googleMapsBrowser = Uri.parse(
-      "https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination=$name&travelmode=driving",
+      "https://www.google.com/maps/search/?api=1&query=$lat,$lng",
     );
 
-    if (await canLaunchUrl(googleMapsApp)) {
-      await launchUrl(googleMapsApp, mode: LaunchMode.externalApplication);
+    if (await canLaunchUrl(geoUri)) {
+      await launchUrl(geoUri, mode: LaunchMode.externalApplication);
     } else if (await canLaunchUrl(googleMapsBrowser)) {
       await launchUrl(googleMapsBrowser, mode: LaunchMode.externalApplication);
     } else {

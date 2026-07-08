@@ -1,44 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:one_coorg/theme/app_colors.dart';
 
 class CategoryItem extends StatelessWidget {
-  final String emoji; // or use Icon/SvgPicture/Image instead
+  final IconData icon;
   final String label;
+  final VoidCallback? onTap;
+  final Color iconColor;
 
-  const CategoryItem({super.key, required this.emoji, required this.label});
+  const CategoryItem({
+    super.key,
+    required this.icon,
+    required this.label,
+    this.onTap,
+    required this.iconColor,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 14),
-      child: SizedBox(
-        width: 64,
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color iconBg = isDark
+        ? AppColors.primary.withValues(alpha: 0.15)
+        : AppColors.primary.withValues(alpha: 0.08);
+
+    final Color textColor = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimaryLight;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 16),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 56,
               height: 56,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(
-                  255,
-                  255,
-                  255,
-                  255,
-                ), // light beige/gray
-                borderRadius: BorderRadius.circular(16),
-              ),
-              alignment: Alignment.center,
-              child: Text(emoji, style: const TextStyle(fontSize: 26)),
+              decoration: BoxDecoration(color: iconBg, shape: BoxShape.circle),
+              child: Icon(icon, color: iconColor, size: 26),
             ),
             const SizedBox(height: 6),
             Text(
               label,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                color: textColor,
               ),
             ),
           ],

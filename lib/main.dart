@@ -5,6 +5,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:one_coorg/firebase_options.dart';
 import 'package:one_coorg/providers/favourites_provider.dart';
+import 'package:one_coorg/providers/trip_plans_provider.dart';
 import 'package:one_coorg/providers/weather_provider.dart';
 import 'package:one_coorg/splash_screen.dart';
 import 'package:one_coorg/theme/app_theme.dart';
@@ -38,17 +39,35 @@ class CoorgExplorerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return FavouritesProvider(
+    //   notifier: FavouritesNotifier(),
+    //   child: WeatherProvider(
+    //     notifier: WeatherNotifier(),
+    //     child: MaterialApp(
+    //       title: 'One Coorg',
+    //       debugShowCheckedModeBanner: false,
+    //       theme: AppTheme.light,
+    //       darkTheme: AppTheme.dark,
+    //       themeMode: ThemeMode.system,
+    //       home: const SplashScreen(),
+    //     ),
+    //   ),
+    // );
+
     return FavouritesProvider(
       notifier: FavouritesNotifier(),
       child: WeatherProvider(
         notifier: WeatherNotifier(),
-        child: MaterialApp(
-          title: 'One Coorg',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: ThemeMode.system,
-          home: const SplashScreen(),
+        child: TripPlansProvider(
+          notifier: TripPlansNotifier(),
+          child: MaterialApp(
+            title: 'One Coorg',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: ThemeMode.system,
+            home: const SplashScreen(),
+          ),
         ),
       ),
     );

@@ -3,7 +3,9 @@
 // Generates a day-by-day itinerary from a flat list of selected places by
 // clustering them geographically (k-means over lat/lng, using
 // Geolocator.distanceBetween for distance) so each day's stops sit close
-// together, then ordering days and stops-within-a-day to minimise backtracking.
+// together, then ordering days and stops-within-a-day to minimise
+// backtracking. Also estimates each day's total driving distance/time and,
+// if a start date is supplied, stamps each day with a real calendar date.
 
 import 'package:geolocator/geolocator.dart';
 import 'package:one_coorg/models/tourist_place.dart';
@@ -13,6 +15,10 @@ import 'package:one_coorg/models/trip_plan.dart';
 // same coordinates already used for your fixed-location weather widget.
 const double _madikeriLat = 12.4244;
 const double _madikeriLng = 75.7382;
+
+// Coorg's roads are hilly and winding — this is a deliberately conservative
+// average to avoid under-promising on drive time. Tune as needed.
+const double _avgSpeedKmh = 28.0;
 
 class _Point {
   final double lat;
@@ -26,12 +32,26 @@ class TripPlannerService {
   /// If there are more days than places, the surplus days come back with an
   /// empty place list (the UI can render these as "free days"). If there are
   /// more places than days, every day gets at least one place, with places
-  /// grouped by physical proximity.
+  /// grouped by physical proximity. If [startDate] is provided, each
+  /// [TripDay.date] is stamped accordingly (day 1 = startDate).
   static TripPlan generate({
     required List<TouristPlace> places,
     required int requestedDays,
+    DateTime? startDate,
+    String title = 'New Trip',
   }) {
-    if (places.isEmpty || requestedDays <= 0) return const TripPlan([]);
+    final id = DateTime.now().microsecondsSinceEpoch.toString();
+    final createdAt = DateTime.now();
+
+    if (places.isEmpty || requestedDays <= 0) {
+      return TripPlan(
+        id: id,
+        title: title,
+        createdAt: createdAt,
+        startDate: startDate,
+        days: const [],
+      );
+    }
 
     final int effectiveDays = requestedDays > places.length
         ? places.length
@@ -68,9 +88,6 @@ class TripPlannerService {
         clusters[nearestIndex].add(place);
       }
 
-      // Recompute centroids as the mean position of each cluster; leave
-      // empty clusters' centroids untouched so they can still attract
-      // points on the next pass.
       for (int c = 0; c < clusters.length; c++) {
         if (clusters[c].isEmpty) continue;
         final avgLat =
@@ -87,10 +104,15 @@ class TripPlannerService {
 
     final days = <TripDay>[];
     for (int i = 0; i < orderedClusters.length; i++) {
+      final orderedPlaces = _orderPlacesWithinDay(orderedClusters[i]);
+      final metrics = _dayMetrics(orderedPlaces);
       days.add(
         TripDay(
           dayNumber: i + 1,
-          places: _orderPlacesWithinDay(orderedClusters[i]),
+          places: orderedPlaces,
+          date: startDate?.add(Duration(days: i)),
+          distanceKm: metrics.$1,
+          driveMinutes: metrics.$2,
         ),
       );
     }
@@ -98,10 +120,43 @@ class TripPlannerService {
     // Pad with empty "free day" entries if the user asked for more days
     // than there were places to fill them with.
     for (int i = orderedClusters.length; i < requestedDays; i++) {
-      days.add(TripDay(dayNumber: i + 1, places: const []));
+      days.add(
+        TripDay(
+          dayNumber: i + 1,
+          places: const [],
+          date: startDate?.add(Duration(days: i)),
+        ),
+      );
     }
 
-    return TripPlan(days);
+    return TripPlan(
+      id: id,
+      title: title,
+      createdAt: createdAt,
+      startDate: startDate,
+      days: days,
+    );
+  }
+
+  /// Total driving distance (km) and rough drive time (minutes) to link an
+  /// already-ordered list of stops in sequence, using the same
+  /// straight-line distance approach as the clustering above (a reasonable
+  /// approximation for a small region like Kodagu, and consistent with what
+  /// "Nearby" already uses).
+  static (double, int) _dayMetrics(List<TouristPlace> orderedPlaces) {
+    if (orderedPlaces.length < 2) return (0, 0);
+    double totalMeters = 0;
+    for (int i = 0; i < orderedPlaces.length - 1; i++) {
+      totalMeters += Geolocator.distanceBetween(
+        orderedPlaces[i].lat,
+        orderedPlaces[i].lng,
+        orderedPlaces[i + 1].lat,
+        orderedPlaces[i + 1].lng,
+      );
+    }
+    final km = totalMeters / 1000;
+    final minutes = ((km / _avgSpeedKmh) * 60).round();
+    return (km, minutes);
   }
 
   /// Farthest-point sampling: start from the place closest to Madikeri, then
@@ -116,8 +171,6 @@ class TripPlannerService {
     final remaining = List<TouristPlace>.from(places);
     final chosen = <TouristPlace>[];
 
-    // First seed: the place nearest the town center, so Day 1 tends to
-    // anchor near the usual starting point of a trip.
     remaining.sort(
       (a, b) =>
           Geolocator.distanceBetween(
@@ -250,5 +303,13 @@ class TripPlannerService {
     }
 
     return ordered;
+  }
+
+  /// Recomputes distance/time for a day after a manual drag-and-drop edit —
+  /// call this whenever the UI reorders or moves places between days so the
+  /// displayed metrics stay accurate.
+  static TripDay recomputeDayMetrics(TripDay day) {
+    final metrics = _dayMetrics(day.places);
+    return day.copyWith(distanceKm: metrics.$1, driveMinutes: metrics.$2);
   }
 }

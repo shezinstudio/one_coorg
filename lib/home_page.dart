@@ -2,7 +2,7 @@ import 'package:one_coorg/screens/home/about_screen.dart';
 import 'package:one_coorg/screens/home/explore_screen.dart';
 import 'package:one_coorg/screens/home/favourites_screen.dart';
 import 'package:one_coorg/screens/home/home_screen.dart';
-import 'package:one_coorg/screens/home/trip_planner_screen.dart';
+import 'package:one_coorg/screens/trip_planner/trip_planner_screen.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 

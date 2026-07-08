@@ -33,17 +33,19 @@ class _AboutScreenState extends State<AboutScreen> {
     super.dispose();
   }
 
-  Future<void> _launchUrl(String url) async {
+  Future<void> _launchUrl(String url, {bool inApp = false}) async {
     final uri = Uri.parse(url);
 
-    // mailto links skip canLaunchUrl check — it's unreliable on Android
     if (uri.scheme == 'mailto') {
       await launchUrl(uri);
       return;
     }
 
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      await launchUrl(
+        uri,
+        mode: inApp ? LaunchMode.inAppWebView : LaunchMode.externalApplication,
+      );
     }
   }
 
@@ -128,19 +130,29 @@ class _AboutScreenState extends State<AboutScreen> {
                     child: Column(
                       children: [
                         // App icon
-                        Image.asset(
-                          "assets/images/logo_round.png",
-                          height: 80,
-                          width: 80,
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Image.asset(
+                            "assets/images/logo_round.png",
+                            height: 76,
+                            width: 76,
+                          ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 18),
 
                         // App name
                         const Text(
                           "One Coorg",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 24,
+                            fontSize: 25,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.5,
                           ),
@@ -152,14 +164,14 @@ class _AboutScreenState extends State<AboutScreen> {
                         Text(
                           "Discover the Scotland of India",
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: Colors.white.withValues(alpha: 0.85),
                             fontSize: 13.5,
                             fontWeight: FontWeight.w400,
                             letterSpacing: 0.2,
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 18),
 
                         // Version pill
                         Container(
@@ -174,14 +186,25 @@ class _AboutScreenState extends State<AboutScreen> {
                               color: Colors.white.withValues(alpha: 0.25),
                             ),
                           ),
-                          child: Text(
-                            "Version $version (Build $buildNumber)",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.3,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.verified_rounded,
+                                size: 13,
+                                color: Colors.white.withValues(alpha: 0.9),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "Version $version (Build $buildNumber)",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -259,7 +282,7 @@ class _AboutScreenState extends State<AboutScreen> {
                                   ],
                           ),
                           child: Text(
-                            "One Coorg is your complete travel companion for Kodagu, Karnataka — the lush hill station nestled in the Western Ghats. Whether you're planning your first trip or your fifth, we help you discover iconic waterfalls, wildlife sanctuaries, ancient temples, misty viewpoints, coffee plantations, and the best places to stay.\n\nOur mission is simple: to make every visit to Coorg more meaningful, more memorable, and more adventurous.",
+                            "One Coorg is your complete travel companion for Kodagu, Karnataka — the lush hill station nestled in the Western Ghats. Whether you're planning your first trip or your fifth, we help you discover iconic waterfalls, wildlife sanctuaries, ancient temples, misty viewpoints, coffee plantations, and build a day-by-day itinerary around them.\n\nOur mission is simple: to make every visit to Coorg more meaningful, more memorable, and more adventurous.",
                             style: TextStyle(
                               fontSize: 14,
                               color: textSec,
@@ -296,32 +319,23 @@ class _AboutScreenState extends State<AboutScreen> {
                             accent: accent,
                           ),
                           _FeatureItem(
+                            icon: Icons.map_rounded,
+                            label: "Smart Trip Planner",
+                            desc:
+                                "Pick your places and days, and get a ready-made itinerary — complete with routes, drive times, and daily weather. Drag places between days to fine-tune it.",
+                            isDark: isDark,
+                            cardBg: cardBg,
+                            divider: divider,
+                            textPri: textPri,
+                            textSec: textSec,
+                            accent: accent,
+                            badge: "NEW",
+                          ),
+                          _FeatureItem(
                             icon: Icons.location_city_rounded,
                             label: "Famous Towns Guide",
                             desc:
                                 "Learn about iconic towns like Madikeri, Kushalnagar, Somwarpet and their hidden stories.",
-                            isDark: isDark,
-                            cardBg: cardBg,
-                            divider: divider,
-                            textPri: textPri,
-                            textSec: textSec,
-                            accent: accent,
-                          ),
-                          _FeatureItem(
-                            icon: Icons.cabin_rounded,
-                            label: "Stays & Hotels",
-                            desc: "FEATURE COMING SOON",
-                            isDark: isDark,
-                            cardBg: cardBg,
-                            divider: divider,
-                            textPri: textPri,
-                            textSec: textSec,
-                            accent: accent,
-                          ),
-                          _FeatureItem(
-                            icon: Icons.eco_rounded,
-                            label: "Plantation Experiences",
-                            desc: "FEATURE COMING SOON",
                             isDark: isDark,
                             cardBg: cardBg,
                             divider: divider,
@@ -422,9 +436,22 @@ class _AboutScreenState extends State<AboutScreen> {
                               accent: accent,
                               onTap: () => _launchUrl(
                                 "https://www.termsfeed.com/live/c195b57d-7ca6-4880-9e39-ce0d2343cda4",
+                                inApp: true,
                               ),
                             ),
 
+                            // _LinkRow(
+                            //   icon: Icons.privacy_tip_outlined,
+                            //   label: "Privacy Policy",
+                            //   isDark: isDark,
+                            //   textPri: textPri,
+                            //   textSec: textSec,
+                            //   divider: divider,
+                            //   accent: accent,
+                            //   onTap: () => _launchUrl(
+                            //     "https://www.termsfeed.com/live/c195b57d-7ca6-4880-9e39-ce0d2343cda4",
+                            //   ),
+                            // ),
                             _LinkRow(
                               icon: Icons.star_outline_rounded,
                               label: "Rate the App",
@@ -638,6 +665,7 @@ class _FeatureItem extends StatelessWidget {
   final Color textSec;
   final Color accent;
   final bool isLast;
+  final String? badge;
 
   const _FeatureItem({
     required this.icon,
@@ -650,6 +678,7 @@ class _FeatureItem extends StatelessWidget {
     required this.textSec,
     required this.accent,
     this.isLast = false,
+    this.badge,
   });
 
   @override
@@ -660,7 +689,9 @@ class _FeatureItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: divider),
+        border: Border.all(
+          color: badge != null ? accent.withValues(alpha: 0.35) : divider,
+        ),
         boxShadow: isDark
             ? []
             : [
@@ -687,13 +718,39 @@ class _FeatureItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: textPri,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: textPri,
+                      ),
+                    ),
+                    if (badge != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: accent,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          badge!,
+                          style: const TextStyle(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 3),
                 Text(
