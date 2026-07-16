@@ -15,6 +15,10 @@ class PlaceOfTheDay extends StatefulWidget {
 }
 
 class _PlaceOfTheDayState extends State<PlaceOfTheDay> {
+  // Card height. Bumped from 220 -> 240 to give a 2-line place name room
+  // to breathe without pushing the description/button out of bounds.
+  static const double _cardHeight = 240;
+
   List<TouristPlace> _places = [];
   TouristPlace? _current;
   Timer? _timer;
@@ -75,7 +79,7 @@ class _PlaceOfTheDayState extends State<PlaceOfTheDay> {
   Widget build(BuildContext context) {
     if (_loading) {
       return Container(
-        height: 220,
+        height: _cardHeight,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -87,7 +91,7 @@ class _PlaceOfTheDayState extends State<PlaceOfTheDay> {
 
     if (_error || _current == null) {
       return Container(
-        height: 220,
+        height: _cardHeight,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -108,7 +112,7 @@ class _PlaceOfTheDayState extends State<PlaceOfTheDay> {
       duration: const Duration(milliseconds: 500),
       child: Container(
         key: ValueKey(place.id), // triggers the fade when place changes
-        height: 220,
+        height: _cardHeight,
         width: double.infinity,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
@@ -176,59 +180,69 @@ class _PlaceOfTheDayState extends State<PlaceOfTheDay> {
                         letterSpacing: 1.5,
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          place.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
+                    // Flexible so this group shrinks instead of triggering
+                    // a hard RenderFlex overflow if a 2-line name ever
+                    // still runs tight on space (e.g. large system font).
+                    Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            place.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              height: 1.15,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          place.description,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            height: 1.3,
+                          const SizedBox(height: 6),
+                          Text(
+                            place.description,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              height: 1.3,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 14),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => PlaceDetailScreen(place: place),
+                          const SizedBox(height: 14),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      PlaceDetailScreen(place: place),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 10,
                               ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 10,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Explore Now'),
+                                SizedBox(width: 6),
+                                Icon(Icons.arrow_forward, size: 16),
+                              ],
                             ),
                           ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Explore Now'),
-                              SizedBox(width: 6),
-                              Icon(Icons.arrow_forward, size: 16),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),

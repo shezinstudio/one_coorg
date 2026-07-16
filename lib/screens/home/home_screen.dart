@@ -3,12 +3,14 @@ import 'package:one_coorg/models/tourist_place.dart';
 import 'package:one_coorg/screens/home/explore_screen.dart';
 import 'package:one_coorg/screens/home/hidden_gem_screen.dart';
 import 'package:one_coorg/screens/home/place_detail_screen.dart';
+import 'package:one_coorg/screens/home/tour_booking_screen.dart';
 import 'package:one_coorg/screens/home/towns_screen.dart';
 import 'package:one_coorg/services/place_service.dart';
 import 'package:one_coorg/theme/app_colors.dart';
 import 'package:one_coorg/widgets/banner_ad_widget.dart';
-import 'package:one_coorg/widgets/category_item.dart';
+import 'package:one_coorg/widgets/category_square_item.dart';
 import 'package:one_coorg/widgets/place_of_the_day.dart';
+import 'package:one_coorg/widgets/taxi_home_section.dart';
 import 'package:one_coorg/widgets/towns_home_section.dart';
 import 'package:one_coorg/widgets/weather_status.dart';
 
@@ -19,8 +21,55 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+class _CategoryData {
+  final String label;
+  final String imageUrl;
+  final String filterKey;
+
+  const _CategoryData({
+    required this.label,
+    required this.imageUrl,
+    required this.filterKey,
+  });
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   late final Future<List<TouristPlace>> _hiddenGemsFuture;
+
+  // TODO: swap these placeholder URLs for your own Supabase Storage /
+  // asset images per category (e.g. assets/images/categories/waterfalls.jpg).
+  static const List<_CategoryData> _categories = [
+    _CategoryData(
+      label: 'Waterfalls',
+      filterKey: 'Waterfalls',
+      imageUrl:
+          'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=200&q=60',
+    ),
+    _CategoryData(
+      label: 'Temples',
+      filterKey: 'Temples',
+      imageUrl:
+          'https://wacayfyuuugawcwzsqcn.supabase.co/storage/v1/object/public/place-images/omkareshwara.jpg?w=200&q=60',
+    ),
+    _CategoryData(
+      label: 'Viewpoints',
+      filterKey: 'Viewpoints',
+      imageUrl:
+          'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?w=200&q=60',
+    ),
+    _CategoryData(
+      label: 'Heritage',
+      filterKey: 'Heritage',
+      imageUrl:
+          'https://images.unsplash.com/photo-1548013146-72479768bada?w=200&q=60',
+    ),
+    _CategoryData(
+      label: 'Reservoirs',
+      filterKey: 'Reservoirs',
+      imageUrl:
+          'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=200&q=60',
+    ),
+  ];
 
   @override
   void initState() {
@@ -87,159 +136,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     const WeatherStatus(),
 
-                    // Search bar
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(
-                    //     horizontal: 16,
-                    //     vertical: 12,
-                    //   ),
-                    //   decoration: BoxDecoration(
-                    //     color: inputBg,
-                    //     borderRadius: BorderRadius.circular(16),
-                    //     border: Border.all(color: divider),
-                    //     boxShadow: [
-                    //       BoxShadow(
-                    //         color: AppColors.primary.withValues(alpha: 0.06),
-                    //         blurRadius: 12,
-                    //         offset: const Offset(0, 3),
-                    //       ),
-                    //     ],
-                    //   ),
-                    //   child: Row(
-                    //     children: [
-                    //       // location icon
-                    //       Icon(
-                    //         Icons.location_pin,
-                    //         color: AppColors.primaryLight,
-                    //         size: 20,
-                    //       ),
-                    //       const SizedBox(width: 5),
-                    //       // Madikeri, Coorg text
-                    //       const Text(
-                    //         "Madikeri, Coorg",
-                    //         style: TextStyle(
-                    //           fontSize: 14,
-                    //           color: AppColors.textSecondaryLight,
-                    //         ),
-                    //       ),
-                    //       const Spacer(),
-                    //       // weather details
-                    //       Icon(
-                    //         Icons.cloud_outlined,
-                    //         color: AppColors.primaryLight,
-                    //         size: 20,
-                    //       ),
-                    //       const SizedBox(width: 5),
-                    //       const Text(
-                    //         "24C  - Sunny",
-                    //         style: TextStyle(
-                    //           fontSize: 14,
-                    //           color: AppColors.textSecondaryLight,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-
-                    // place of  the day=============================================
-                    //const SizedBox(height: 20),
-
-                    //                     Container(
-                    //                       height: 220,
-                    //                       width: double.infinity,
-                    //                       decoration: BoxDecoration(
-                    //                         borderRadius: BorderRadius.circular(20),
-                    //                         image: const DecorationImage(
-                    //                           image: AssetImage("assets/images/abbey_falls.jpg"),
-                    //                           //// or AssetImage
-                    //                           fit: BoxFit.cover,
-                    //                         ),
-                    //                       ),
-                    //                       child: Container(
-                    //                         // dark gradient overlay so text is readable
-                    //                         decoration: BoxDecoration(
-                    //                           borderRadius: BorderRadius.circular(20),
-                    //                           gradient: LinearGradient(
-                    //                             begin: Alignment.topCenter,
-                    //                             end: Alignment.bottomCenter,
-                    //                             colors: [
-                    //                               Colors.black.withValues(alpha: 0.5),
-                    //                               Colors.black.withValues(alpha: 0.1),
-                    //                               Colors.black.withValues(alpha: 0.6),
-                    //                             ],
-                    //                             stops: const [0.0, 0.4, 1.0],
-                    //                           ),
-                    //                         ),
-                    //                         padding: const EdgeInsets.all(20),
-                    //                         child: Column(
-                    //                           crossAxisAlignment: CrossAxisAlignment.start,
-                    //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //                           children: [
-                    //                             const Text(
-                    //                               'EXPLORE',
-                    //                               style: TextStyle(
-                    //                                 color: Colors.white,
-                    //                                 fontSize: 12,
-                    //                                 fontWeight: FontWeight.w600,
-                    //                                 letterSpacing: 1.5,
-                    //                               ),
-                    //                             ),
-                    //                             Column(
-                    //                               crossAxisAlignment: CrossAxisAlignment.start,
-                    //                               children: [
-                    //                                 const Text(
-                    //                                   'Abbey Falls',
-                    //                                   style: TextStyle(
-                    //                                     color: Colors.white,
-                    //                                     fontSize: 26,
-                    //                                     fontWeight: FontWeight.bold,
-                    //                                   ),
-                    //                                 ),
-                    //                                 const SizedBox(height: 6),
-                    //                                 const Text(
-                    //                                   'Beautiful waterfall surrounded\nby lush green nature.',
-                    //                                   style: TextStyle(
-                    //                                     color: Colors.white,
-                    //                                     fontSize: 14,
-                    //                                     height: 1.3,
-                    //                                   ),
-                    //                                 ),
-                    //                                 const SizedBox(height: 14),
-                    //                                 ElevatedButton(
-                    //                                   onPressed: () {},
-                    //                                   style: ElevatedButton.styleFrom(
-                    //                                     backgroundColor:
-                    //                                         AppColors.primary, // dark green
-                    //                                     foregroundColor: Colors.white,
-                    //                                     padding: const EdgeInsets.symmetric(
-                    //                                       horizontal: 18,
-                    //                                       vertical: 10,
-                    //                                     ),
-                    //                                     shape: RoundedRectangleBorder(
-                    //                                       borderRadius: BorderRadius.circular(30),
-                    //                                     ),
-                    //                                   ),
-                    //                                   child: const Row(
-                    //                                     mainAxisSize: MainAxisSize.min,
-                    //                                     children: [
-                    //                                       Text('Explore Now'),
-                    //                                       SizedBox(width: 6),
-                    //                                       Icon(Icons.arrow_forward, size: 16),
-                    //                                     ],
-                    //                                   ),
-                    //                                 ),
-                    //                               ],
-                    //                             ),
-                    //                           ],
-                    //                         ),
-                    //                       ),
-                    //                     ),
-                    // //
-
                     // place of  the day=============================================
                     const SizedBox(height: 20),
 
                     const PlaceOfTheDay(),
+
+                    // taxi --------------------------------------------------
+                    const SizedBox(height: 16),
+                    TaxiHomeSection(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const TourBookingScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
 
                     // ==========END of  place of  the day=============================================
                     const SizedBox(height: 16),
@@ -262,196 +175,30 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Horizontal scrollable category list
+                        // Horizontal scrollable category list — square image
+                        // tiles with the label below, on a green card.
                         SizedBox(
-                          height: 90,
-                          child: ListView(
+                          height: 78,
+                          child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            children: [
-                              CategoryItem(
-                                icon: Icons.water,
-                                label: 'Waterfalls',
-                                iconColor: Colors.blueAccent,
+                            itemCount: _categories.length,
+                            itemBuilder: (context, index) {
+                              final category = _categories[index];
+                              return CategorySquareItem(
+                                imageUrl: category.imageUrl,
+                                label: category.label,
                                 onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const ExploreScreen(
-                                      initialCategory: 'Waterfalls',
+                                    builder: (_) => ExploreScreen(
+                                      initialCategory: category.filterKey,
                                     ),
                                   ),
                                 ),
-                              ),
-                              CategoryItem(
-                                icon: Icons.temple_hindu,
-                                label: 'Temples',
-                                iconColor: Colors.purpleAccent,
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const ExploreScreen(
-                                      initialCategory: 'Temples',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              CategoryItem(
-                                icon: Icons.landscape,
-                                label: 'Viewpoints',
-                                iconColor: Colors.greenAccent,
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const ExploreScreen(
-                                      initialCategory: 'Viewpoints',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              CategoryItem(
-                                icon: Icons.account_balance,
-                                label: 'Heritage',
-                                iconColor: Colors.orangeAccent,
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const ExploreScreen(
-                                      initialCategory: 'Heritage',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              CategoryItem(
-                                icon: Icons.waves,
-                                label: 'Reservoirs',
-                                iconColor: Colors.cyanAccent,
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const ExploreScreen(
-                                      initialCategory: 'Reservoirs',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                              );
+                            },
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 90,
-                        //   child: ListView(
-                        //     scrollDirection: Axis.horizontal,
-                        //     children: [
-                        //       GestureDetector(
-                        //         onTap: () => Navigator.push(
-                        //           context,
-                        //           MaterialPageRoute(
-                        //             builder: (_) => const ExploreScreen(
-                        //               initialCategory: 'Waterfalls',
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         child: CategoryItem(
-                        //           icon: Icons.water,
-                        //           label: 'Waterfalls',
-                        //           iconColor: Colors.blueAccent,
-                        //         ),
-                        //       ),
-                        //       GestureDetector(
-                        //         onTap: () => Navigator.push(
-                        //           context,
-                        //           MaterialPageRoute(
-                        //             builder: (_) => const ExploreScreen(
-                        //               initialCategory: 'Temples',
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         child: CategoryItem(
-                        //           icon: Icons.temple_hindu,
-                        //           label: 'Temples',
-                        //           iconColor: Colors.purpleAccent,
-                        //         ),
-                        //       ),
-                        //       GestureDetector(
-                        //         onTap: () => Navigator.push(
-                        //           context,
-                        //           MaterialPageRoute(
-                        //             builder: (_) => const ExploreScreen(
-                        //               initialCategory: 'Viewpoints',
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         child: CategoryItem(
-                        //           icon: Icons.landscape,
-                        //           label: 'Viewpoints',
-                        //           iconColor: Colors.greenAccent,
-                        //         ),
-                        //       ),
-                        //       GestureDetector(
-                        //         onTap: () => Navigator.push(
-                        //           context,
-                        //           MaterialPageRoute(
-                        //             builder: (_) => const ExploreScreen(
-                        //               initialCategory: 'Heritage',
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         child: CategoryItem(
-                        //           icon: Icons.account_balance,
-                        //           label: 'Heritage',
-                        //           iconColor: Colors.orangeAccent,
-                        //         ),
-                        //       ),
-                        //       GestureDetector(
-                        //         onTap: () => Navigator.push(
-                        //           context,
-                        //           MaterialPageRoute(
-                        //             builder: (_) => const ExploreScreen(
-                        //               initialCategory: 'Reservoirs',
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         child: CategoryItem(
-                        //           icon: Icons.waves,
-                        //           label: 'Reservoirs',
-                        //           iconColor: Colors.cyanAccent,
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // SizedBox(
-                        //   height: 90,
-                        //   child: ListView(
-                        //     scrollDirection: Axis.horizontal,
-                        //     children: [
-                        //       CategoryItem(
-                        //         icon: Icons.water,
-                        //         label: 'Waterfalls',
-                        //         iconColor: Colors.blueAccent,
-                        //       ),
-                        //       CategoryItem(
-                        //         icon: Icons.temple_hindu,
-                        //         label: 'Temples',
-                        //         iconColor: Colors.purpleAccent,
-                        //       ),
-                        //       CategoryItem(
-                        //         icon: Icons.landscape,
-                        //         label: 'Viewpoints',
-                        //         iconColor: Colors.greenAccent,
-                        //       ),
-                        //       CategoryItem(
-                        //         icon: Icons.account_balance,
-                        //         label: 'Heritage',
-                        //         iconColor: Colors.orangeAccent,
-                        //       ),
-                        //       CategoryItem(
-                        //         icon: Icons.waves,
-                        //         label: 'Reservoirs',
-                        //         iconColor: Colors.cyanAccent,
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                       ],
                     ),
 
@@ -542,34 +289,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                               );
-                              // return ListView.builder(
-                              //   scrollDirection: Axis.horizontal,
-                              //   itemCount: places.length,
-                              //   itemBuilder: (context, index) {
-                              //     return _DestinationItem(
-                              //       imageUrl: places[index].imageUrl,
-                              //       label: places[index].name,
-                              //     );
-                              //   },
-                              // );
                             },
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 180,
-                        //   child: ListView.builder(
-                        //     scrollDirection: Axis.horizontal,
-                        //     itemCount: destinations.length,
-                        //     itemBuilder: (context, index) {
-                        //       return _DestinationItem(
-                        //         imageUrl: destinations[index].imageUrl,
-                        //         label: destinations[index].label,
-                        //       );
-                        //     },
-                        //   ),
-                        // ),
-
-                        // Horizontal scrollable hidden gem list
                       ],
                     ),
 

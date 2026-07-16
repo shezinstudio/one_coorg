@@ -4,6 +4,10 @@ import 'dart:ui';
 class AppColors {
   AppColors._();
 
+  static const forestGreen = Color(0xFF0B2B26);
+  static const forestGreenDark = Color(0xFF1B4332);
+  static const amber = Color(0xFFD9A441);
+
   // ── Brand Greens ──────────────────────────────────────
   static const Color primary = Color(0xFF2E7D32); // Deep Forest Green
   static const Color primaryLight = Color(0xFF4CAF50); // Fresh Green
